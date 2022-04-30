@@ -6,15 +6,7 @@
 
 ---
 
-1、准备一台管理机执行如下操作安装 Ansible：
-
-```bash
-$ sudo apt update
-$ sudo apt-get install software-properties-common
-$ sudo apt-add-repository --yes  ppa:ansible/ansible:2.7.6
-$ sudo apt update
-$ sudo apt-get install ansible
-```
+1、准备一台管理机执行,安装 Ansible
 
 2、 取消 Ansible 检查 Key ：
 
@@ -24,16 +16,10 @@ $ vim /etc/ansible/ansible.cfg
 host_key_checking = False
 ```
 
-3、克隆 Ansible Project：
+3、配置主机清单：
 
 ```bash
-$ git clone https://github.com/zze326/ansible-deploy-redis-cluster.git
-```
-
-4、配置主机清单：
-
-```bash
-$ cd ansible-deploy-redis-cluster/
+$ cd redis-cluster-ubuntu18
 $ vim hosts.yml
 all:
   vars:
@@ -45,7 +31,7 @@ all:
     ansible_sudo_pass: root1234
     # 如果你需要使用其它版本的 Redis，可通过 http://download.redis.io/releases/ 下载源码包进行编译，所以将编译好的二进制文件拷贝到下面 bin_dir 指定的目录即可 
     # 注意编译前需要安装libsystemd-dev(systemd-devel on CentOS),而后执行make USE_SYSTEMD=yes  
-    bin_dir: /opt/redis_bin
+    bin_dir: ./redis-6.2.7/bin-ubuntu18
     # 安装目录
     install_dir: /opt/apps
     # 主实例端口

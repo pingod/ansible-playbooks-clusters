@@ -54,7 +54,7 @@
   - 'root            hard    nofile          65535'
   - 'root            soft    nofile          65535'
 
-- name: 为 Ubuntu 18 创建 /etc/rc.local
+- name: 为 Ubuntu 创建 /etc/rc.local
   lineinfile:
     path: /etc/rc.local
     firstmatch: yes
