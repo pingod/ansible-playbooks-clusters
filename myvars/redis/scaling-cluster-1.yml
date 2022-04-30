@@ -14,7 +14,7 @@ data_dir: "/data/redis/sc-1"
 config_dir: "/etc/redis/sc-1"
 
 # 登录密码
-redis_password: "root"
+redis_password: "thundersoft"
 
 # 日志文件目录
 log_dir: "/var/log/redis/sc-1"

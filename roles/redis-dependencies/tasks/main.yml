@@ -1,4 +1,4 @@
-- name: install dependencies libs
+- name: install dependencies libs with yum
   yum:
     name:
       - make
@@ -8,6 +8,14 @@
       - pcre-devel
       - openssl-devel
       - zlib-devel
+      - systemd-devel
+    state: present
+
+- name: install dependencies libs with apt
+  apt:
+    name:
+      - build-essential
+      - libsystemd-dev
     state: present
 
 - name: create group for redis
