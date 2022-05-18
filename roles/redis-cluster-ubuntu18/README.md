@@ -131,5 +131,4 @@ Warning: Using a password with '-a' or '-u' option on the command line interface
 10.1.30.13:6379 (2b8f8221...) -> 0 keys | 5462 slots | 1 slaves.
 ```
 
-
 From: https://github.com/zze326/ansible-deploy-redis-cluster.git
