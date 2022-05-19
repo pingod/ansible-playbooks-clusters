@@ -1,0 +1,16 @@
+# MySQL 实例端口
+mysql_port: 3306
+# root 密码
+mysql_password: aaaaaa
+#mysql_innodb_buffer_pool_size: "4G"
+#mysql_version: "8.0.11"
+#mysql_package: "mysql-8.0.11-linux-glibc2.12-x86_64.tar.gz"
+#mysql_datahome: "/data/mysql"
+
+mysql_backup_dir: /data/backup/mysql
+mysql_backup_user: root
+mysql_backup_password: aaaaaa
+
+mysql_plugins:
+ - { name: "rpl_semi_sync_master", so: "semisync_master.so" }
+ - { name: "rpl_semi_sync_slave", so: "semisync_slave.so" }

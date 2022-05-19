@@ -1,0 +1,47 @@
+---
+- name: Initialize zabbix web
+  hosts: zabbix_server
+  remote_user: root
+  vars_files:
+    - ../../common/zabbix-server/defaults/main.yml
+    - var/main.yml
+  tasks:
+    - name: Initialize | Transfer zabbix.conf to remote host
+      template:
+        src: ../templates/zabbix.conf
+        dest: /etc/httpd/conf.d/zabbix.conf
+
+    - name: Initialize | Transfer zabbix.conf.php to remote host
+      template:
+        src: ../templates/zabbix.conf.php
+        dest: /usr/share/zabbix/conf/zabbix.conf.php
+
+    - name: Initialize | remove file /usr/share/zabbix/setup.php
+      file: dest=/usr/share/zabbix/setup.php state=absent
+
+    - name: Initialize | Create apache directory owner.
+      file: path=/var/lib/php/ recurse=yes owner=apache group=apache
+
+    - name: Initialize | Copy font file
+      copy:
+        src: msyh.ttf
+        dest: /usr/share/zabbix/fonts/msyh.ttf
+        owner: zabbix
+        group: zabbix
+
+#define('ZBX_GRAPH_FONT_NAME',           'DejaVuSans'); // font file name
+#define('ZBX_GRAPH_FONT_NAME',           'msyh'); // font file name
+    # 修改图片中文字体
+    - name: Initialize | Modify ZBX_GRAPH_FONT_NAME
+      lineinfile:
+        dest: "/usr/share/zabbix/include/defines.inc.php"
+        regexp: "ZBX_GRAPH_FONT_NAME"
+        line: "define('ZBX_GRAPH_FONT_NAME',           'msyh');"
+
+    - name: Initialize  | restart httpd (sytemctl)
+      systemd:
+        name: httpd
+        state: restarted
+
+    - name: Initialize | Wait for httpd restart.
+      wait_for: port=80 delay=1 timeout=5

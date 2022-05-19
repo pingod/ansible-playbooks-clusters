@@ -1,0 +1,10 @@
+---
+- name: Install MySQL standalone
+  hosts: ec20
+  become: yes
+  vars_files:
+    - ../../common/mysql/defaults/main.yml
+    - var/main.yml
+
+  roles:
+    - { role: mysql}

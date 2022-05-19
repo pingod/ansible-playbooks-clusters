@@ -1,0 +1,23 @@
+---
+- name: Install zabbix-server
+  hosts: zabbix_server
+  remote_user: root
+  vars_files:
+    - ../../common/mysql/defaults/main.yml
+    - ../../common/zabbix-server/defaults/main.yml
+    - ../../common/tokudb/defaults/main.yml
+    - var/main.yml
+  roles:
+    - tokudb
+    - zabbix-server
+    - zabbix-agent
+
+- name: Install zabbix-agent
+  hosts: zabbix_agent
+  remote_user: root
+  vars_files:
+    - ../../common/zabbix-agent/defaults/main.yml
+    - var/main.yml
+  roles:
+    - zabbix-agent
+    - { role: fpmmm, mysql_port: 3306, mysql_admin_user: admin, mysql_admin_pwd: aaaaaa }

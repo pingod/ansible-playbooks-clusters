@@ -1,0 +1,1 @@
+grant replication client on *.* to '{{ monitor_user }}'@'%' identified by '{{ monitor_pwd }}';

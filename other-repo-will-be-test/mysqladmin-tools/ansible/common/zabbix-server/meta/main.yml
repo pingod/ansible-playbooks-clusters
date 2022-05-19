@@ -1,0 +1,6 @@
+---
+dependencies:
+  - role: devel
+  - role: epel
+  - role: php7
+  - role: httpd

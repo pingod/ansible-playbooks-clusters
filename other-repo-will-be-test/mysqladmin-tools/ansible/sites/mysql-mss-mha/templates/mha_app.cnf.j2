@@ -1,0 +1,36 @@
+[server default]
+ssh_user=root
+manager_workdir=/var/log/masterha/{{ app_name }}
+manager_log=/var/log/masterha/manager_{{ app_name }}.log
+
+user=admin
+password={{ mysql_password }}
+repl_user={{ mysql_repl_user }}
+repl_password={{ mysql_repl_password }}
+
+ping_interval=5
+remote_workdir=/tmp
+
+master_binlog_dir={{ mysql_portdir }}/logs/
+master_ip_failover_script= /etc/masterha/scripts/{{ app_name }}/master_ip_failover
+master_ip_online_change_script= /etc/masterha/scripts/{{ app_name }}/master_ip_online_change
+secondary_check_script= /usr/bin/masterha_secondary_check -s {{ groups['mha-node'][0] }} -s {{ groups['mha-node'][1] }} -s {{ groups['mha-node'][2] }}
+#report_script=/etc/masterha/scripts/send_report
+#shutdown_script=""
+
+[server1]
+hostname={{ groups['mha-node'][0] }}
+port={{ mysql_port }}
+
+[server2]
+hostname={{ groups['mha-node'][1] }}
+port={{ mysql_port }}
+candidate_master=1
+
+[server3]
+hostname={{ groups['mha-node'][2] }}
+port={{ mysql_port }}
+
+[binlog1]
+hostname={{ groups['binlog-server'][0] }}
+master_binlog_dir=/data/backup/mysql/binlog

@@ -1,0 +1,10 @@
+---
+- name: Initialize | Transfer script to node
+  template:
+    src: templates/{{ item }}
+    dest: /tmp/{{ item }}
+  with_items:
+    - proxysql.sql
+
+- name: Initialize | Init proxysql
+  shell: mysql -h127.0.0.1 -P6032 -uadmin -padmin -f < /tmp/proxysql.sql
