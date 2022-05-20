@@ -9,7 +9,7 @@
 
 - name: Clear temp file tmp/create_monitor_user.sql
   file:
-    dest: tmp/create_monitor_user.sql
+    dest: /tmp/create_monitor_user.sql
     state: absent
 
 - name: Install keepalived
