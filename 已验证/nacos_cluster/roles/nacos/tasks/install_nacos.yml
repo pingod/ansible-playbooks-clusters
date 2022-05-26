@@ -1,0 +1,56 @@
+---
+- name: Open Firewall [ RedHat ]
+  firewalld:
+    port: '{{item}}/tcp'
+    permanent: true
+    state: enabled
+    zone: public
+    immediate: yes
+  with_items:
+    - '{{firewall_ports}}'
+  when: open_firewall and ansible_os_family == 'RedHat'
+  ignore_errors: true
+
+- name: Install JDK [apt]
+  apt: name=openjdk-8-jdk  state=present
+  when: ansible_os_family == 'Debian'
+
+- name: Install Mycli [apt]
+  apt: name=mycli  state=present
+  when: ansible_os_family == 'Debian'
+
+- name: Add Nacos User
+  user: name={{ user }} shell=/bin/bash append=yes
+  when: add_user
+
+- name: Create Install Dir
+  file: path={{item}} state=directory owner={{ user }} group={{ group}} mode="u=rwx,g=r,o=r"
+  with_items:
+    - "{{ install_dir }}"
+
+#  判断本地压缩包是否存在
+- name: Install  | Check if local Nacos package tar file exist .
+  delegate_to: localhost
+  stat: path={{ download_path }}/nacos-server-{{ nacos_version }}.tar.gz
+  register: nacos_local_package_tar_result
+
+- name: Download Nacos Bin file to Ansible Controller
+  delegate_to: localhost
+  get_url:
+    url: "https://github.com/alibaba/nacos/releases/download/{{ nacos_version }}/nacos-server-{{ nacos_version }}.tar.gz"
+    dest: "/tmp/"
+    owner: "{{ ansible_user }}"
+  tags: download,local
+  when: not nacos_local_package_tar_result.stat.exists
+
+#  判断远端压缩包是否存在
+- name: Install  | Check if remote Nacos package tar file exist .
+  stat: path={{ download_path }}nacos-server-{{ nacos_version }}.tar.gz
+  register: nacos_remote_package_tar_result
+
+- name: Copy Package To Remote Server
+  copy: src={{ download_path }}/nacos-server-{{ nacos_version }}.tar.gz dest={{ download_path }} owner={{ user }} mode=755
+  when: not nacos_remote_package_tar_result.stat.exists
+
+- name: Extract nacos archive
+  command: chdir={{install_dir}}/ /bin/tar xvf {{ download_path }}/nacos-server-{{ nacos_version }}.tar.gz -C {{install_dir}}/

@@ -1,0 +1,14 @@
+---
+- name: Install Nacos
+  include: install_nacos.yml
+  when: install_nacos
+
+- name: Config Nacos
+  include: config_nacos.yml
+  when: config_nacos
+
+- name: Start Nacos
+  shell: "sh -x {{install_dir}}/nacos/bin/startup.sh "
+  become: yes
+  become_user: "{{ user }}"
+  when: start_service

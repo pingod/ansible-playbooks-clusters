@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+ 
+  labels:
+    app: elastic-exporter
+    prometheus: ipaas
+  name: elastic-exporter
+  namespace: monitoring
+  
+spec:
+  endpoints:
+    - interval: 30s
+      path: /metrics
+      port: tcp-9114
+      scheme: http
+  jobLabel: elastic-exporter
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector: {}

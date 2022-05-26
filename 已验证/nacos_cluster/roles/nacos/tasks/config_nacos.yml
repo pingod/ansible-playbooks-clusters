@@ -1,0 +1,41 @@
+---
+- name: Import sql to mysql
+  shell: mycli -h {{ mysql.address }} -u {{ mysql_admin.user }} -p {{ mysql_admin.password }} {{mysql.database_name}} < {{install_dir}}/nacos/conf/nacos-mysql.sql
+  #with_random_choice: "{{ groups['mysql_hosts'] }}"
+  tags: install,mysql
+  #run_once: true
+  #when: ansible_hostname == 'that_hostname_you_want_to_run'
+  when: inventory_hostname == play_hosts[0]
+  ignore_errors: yes
+
+- name: Copy cluster.conf
+  template: src=cluster.conf dest="{{ install_dir }}/nacos/conf" mode=644 owner={{ user }} group = {{ group }}
+
+- name: Copy application.properties
+  template: src=application.properties dest={{install_dir}}/nacos/conf mode=755 owner={{ user }} group = {{ group }}
+
+- name: Copy nacos systemd template
+  template: src=nacos.service dest=/lib/systemd/system/ mode=755 owner={{ user }} group = {{ group }}
+
+#- name: Service Auto Setup
+#  shell:   systemctl daemon-reload &&  systemctl enable nacos.service && systemctl start nacos.service &&  systemctl status nacos.service
+#  become: yes
+
+
+- name: Start and enable nacos service
+  systemd:
+    name:    nacos.service
+    enabled: yes
+    state:   started
+  register: nacos_service_result
+
+- name: Nacos service status
+  shell: "systemctl status nacos.service"
+  ignore_errors: yes
+
+- name: Nacos service ports status
+  shell: "netstat -tnlp|grep java"
+  ignore_errors: yes
+
+- name: Guaranteed permissions
+  shell: "chmod 777 -R {{install_dir}}/nacos"

@@ -1,0 +1,16 @@
+---
+- name: percona-toolkit | Install percona-release [yum]
+  yum: 
+    name: "https://downloads.percona.com/downloads/percona-release/percona-release-1.0-27/redhat/percona-release-1.0-27.noarch.rpm"
+    state: present
+  when: open_firewall and ansible_os_family == 'RedHat'
+
+- name: percona-toolkit | Install percona-release [apt]
+  apt: 
+    deb: "https://downloads.percona.com/downloads/percona-release/percona-release-1.0-27/debian/percona-release_1.0-27.generic_all.deb"
+  when: ansible_os_family == 'Debian'
+
+- name: percona-toolkit | Install percona-toolkit
+  yum: name={{ item }} state=present
+  with_items:
+    - "percona-toolkit"

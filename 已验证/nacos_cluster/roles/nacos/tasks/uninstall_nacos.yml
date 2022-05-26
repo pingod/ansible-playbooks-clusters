@@ -1,0 +1,22 @@
+---
+- hosts: nacos
+  user: root
+  gather_facts: no
+  tasks:
+    - name: Stop and disable nacos service
+      service:
+        name:    nacos.service
+        enabled: no
+        state:   stopped
+      register: nacos_service_result
+      failed_when: "nacos_service_result is failed and 'Could not find the requested service' not in nacos_service_result.msg"
+
+    - name: Remove nacos bin dir 
+      file:
+        state: absent
+        path: /opt/nacos/
+    
+    - name: Remove nacos systemd file
+      file:
+        path: /lib/systemd/system/nacos.service
+        state: absent
