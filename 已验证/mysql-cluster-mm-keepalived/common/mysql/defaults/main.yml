@@ -1,0 +1,55 @@
+---
+#### MySQL 全局默认配置文件 ####
+
+# MySQL 运行ansible节点的二进制包目录
+software_files_path: "/home/pavia/download"
+# MySQL 安装到远端服务器的目录
+software_install_path: "/usr/local"
+mysql_version: "5.7.38"
+mysql_package: "mysql-5.7.38-linux-glibc2.12-x86_64.tar.gz"
+
+# 端口号
+mysql_port: "3306"
+mysql_user: "mysql"
+# root 密码
+mysql_password: "thundersoft1234"
+
+mysql_dirname: "{{ mysql_branch }}-{{ mysql_version }}"
+mysql_basedir: "{{ software_install_path }}/mysql"
+mysql_cnf_tpl: "my.cnf"
+# MySQL全局 Data home
+mysql_datahome: "/data/mysql"
+# MySQL实例 Data home,使用端口号
+mysql_portdir: "{{ mysql_datahome }}/{{ mysql_port }}"
+mysql_datadir: "{{ mysql_portdir }}/data"
+mysql_sock: "/tmp/mysql{{ mysql_port }}.sock"
+
+# MySQL 分支,默认官司版本,可选:[mysql, pxc, percona, mariadb]
+mysql_branch: "mysql"
+
+
+# 是否开机启动
+startup_on_boot: true
+
+# 多实例service name,用于 systemctl start mysql_servicename
+mysql_servicename : "mysql{{ mysql_port }}"
+mysql_innodb_buffer_pool_size: "32M"
+master_info_repository: "FILE"
+# 半同步复制
+semi_replication: False
+# 组复制
+group_replication: False
+read_only: 1
+# GTID
+gtid: True
+
+tokudb: False
+
+mysql_plugins:
+ - { name: "rpl_semi_sync_master", so: "semisync_master.so" }
+ - { name: "rpl_semi_sync_slave", so: "semisync_slave.so" }
+
+initialize_cmd: "{{ mysql_basedir }}/bin/mysqld --defaults-file={{ mysql_portdir }}/my.cnf --initialize-insecure"
+
+# mariadb & mysql 5.6
+#initialize_cmd: "{{ mysql_basedir }}/scripts/mysql_install_db --defaults-file={{ mysql_portdir }}/my.cnf"

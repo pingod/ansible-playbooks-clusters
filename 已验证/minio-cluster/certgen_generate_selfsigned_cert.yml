@@ -1,0 +1,40 @@
+---
+#  判断本地文件是否存在
+- name: Install certgen | Check if local certgen bin file exist .
+  stat: path=./ansible-role-minio/files/certgen
+  register: certgen_bin_local_file_result
+
+#  如果本地没有，则开始下载minio二进制文件
+- name: Compose the certgen_bin download url
+  set_fact:
+    _certgen_server_download_url: "https://github.com/minio/certgen/releases/latest/download/certgen-linux-{{ go_arch }}"
+  tags: download
+  when: not certgen_bin_local_file_result.stat.exists
+
+- name: "Get the certgen_bin checksum for {{ go_arch }} "
+  set_fact:
+    _certgen_server_checksum: "{{ lookup('url', _certgen_server_download_url + '.sha256sum').split(' ')[0] }}"
+  tags: download
+  when: not certgen_bin_local_file_result.stat.exists
+
+- name: Download the certgen_bin
+  get_url:
+    url: "{{ _certgen_server_download_url }}"
+    dest: "{{ minio_server_bin }}"
+    owner: "root"
+    group: "root"
+    mode: 0755
+    checksum: "sha256:{{ _certgen_server_checksum }}"
+  register: _download_server
+  until: _download_server is succeeded
+  retries: 5
+  delay: 2
+  tags: download
+  when: not certgen_bin_local_file_result.stat.exists
+
+#https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls
+- name: Create self-signed certificates |server
+  shell: "cd certificates  && ../ansible-role-minio/files/certgen -host {{ cert_ips_will_include | join(',') }} "
+
+- name: Create self-signed certificates |client
+  shell: "cd certificates  && ../ansible-role-minio/files/certgen -client -host {{ cert_ips_will_include | join(',') }} "

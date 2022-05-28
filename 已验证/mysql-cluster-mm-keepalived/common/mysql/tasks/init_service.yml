@@ -1,0 +1,24 @@
+---
+# 安装启动服务
+  - name: Initialize | create systemd config file
+    when: ansible_distribution_major_version|int >= 18
+    template:
+     src: ../templates/mysql.service
+     dest: /lib/systemd/system/{{ mysql_servicename }}.service
+
+  - name: Initialize | config mysql{{ mysql_port }}.service start up on boot
+    when: startup_on_boot == True
+    systemd:
+     name: "{{ mysql_servicename }}"
+     enabled: yes
+     daemon_reload: yes
+
+  - name: Initialize | start mysql{{ mysql_port }} (sytemctl)
+    when: ansible_distribution_major_version|int >= 18
+    systemd:
+     name: "{{ mysql_servicename }}"
+     state: started
+     daemon_reload: yes
+
+  - name: Initialize | Wait for mysql start.
+    wait_for: port={{ mysql_port }} delay=5 timeout=15

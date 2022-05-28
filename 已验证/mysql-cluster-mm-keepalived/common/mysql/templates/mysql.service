@@ -1,0 +1,17 @@
+[Unit]
+Description=MySQL Server {{ mysql_port }}
+After=network.target
+After=syslog.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=mysql
+Group=mysql
+ExecStart={{ mysql_basedir }}/bin/mysqld_safe --defaults-file={{ mysql_datahome }}/{{ mysql_port }}/my.cnf
+ExecStartPost={{ mysql_datahome }}/chmod_mysql_pid.sh {{ mysql_portdir }}/mysqld.pid
+LimitNOFILE = 65536
+#Restart=on-failure
+#RestartPreventExitStatus=1
+#PrivateTmp=false

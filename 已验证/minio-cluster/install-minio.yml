@@ -1,0 +1,46 @@
+---
+- name: Install and configure Minio Server
+  hosts: minio
+  become: true
+  gather_facts: true
+  vars:
+    ssl_key_size: 4096
+
+
+  pre_tasks:
+    - name: Openssl Generate self-signed SSL certificates for minio
+      include_tasks: openssl_generate_selfsigned_cert.yml
+      args:
+        apply:
+          delegate_to: localhost
+          become: false
+      when: minio_enable_tls and cert_create_method == 'openssl'
+
+    - name: Load openssl tls key and cert
+      set_fact:
+        minio_openssl_key: "{{ lookup('file','certificates/' + inventory_hostname + '_private.key') }}"
+        minio_openssl_cert: "{{ lookup('file','certificates/' + inventory_hostname + '_public.crt') }}"
+      when: minio_enable_tls and cert_create_method == 'openssl'
+
+    - name: Certgen Generate self-signed SSL certificates for minio
+      include_tasks: certgen_generate_selfsigned_cert.yml
+      args:
+        apply:
+          delegate_to: localhost
+          become: false
+      when: minio_enable_tls and cert_create_method == 'certgen'
+
+    - name: Load certgen server tls key and cert
+      set_fact:
+        minio_certgen_server_key: "{{ lookup('file','certificates/' + 'private' + '.key') }}"
+        minio_certgen_server_cert: "{{ lookup('file','certificates/' + 'public' + '.crt') }}"
+      when: minio_enable_tls and cert_create_method == 'certgen'
+
+    - name: Load certgen client tls key and cert
+      set_fact:
+        minio_certgen_client_key: "{{ lookup('file','certificates/' + 'client' + '.key') }}"
+        minio_certgen_client_cert: "{{ lookup('file','certificates/' + 'client' + '.crt') }}"
+      when: minio_enable_tls and cert_create_method == 'certgen'
+      
+  roles:
+    - role: ./ansible-role-minio

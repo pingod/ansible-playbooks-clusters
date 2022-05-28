@@ -1,0 +1,10 @@
+---
+ - name: Install | MySQL percona server requirements
+   yum: name={{ item }} state=present
+   with_items:
+    - "openssl"
+    - "jemalloc"
+    - "asio-devel"
+    - "libaio-devel"
+    - "numactl-devel"
+   failed_when: no

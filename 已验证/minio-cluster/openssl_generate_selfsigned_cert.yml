@@ -1,0 +1,28 @@
+---
+- name: Create private certificate
+  openssl_privatekey:
+    path: "certificates/{{ inventory_hostname }}_private.key"
+    size: "{{ ssl_key_size | int }}"
+    mode: 0644
+
+- name: Create CSR
+  openssl_csr:
+    path: "certificates/{{ inventory_hostname }}_cert.csr"
+    privatekey_path: "certificates/{{ inventory_hostname }}_private.key"
+    common_name: "{{ server_hostname }}"
+    #subject_alt_name: ["IP:{{ ansible_default_ipv4.address }}"]
+    subject_alt_name: "{{ item.value | map('regex_replace', '^', 'IP:') | list }}"
+  with_dict:
+      ips:
+      - "{{ ansible_default_ipv4.address }}"
+      - 127.0.0.1
+      - 10.0.10.36
+      - 10.0.10.38
+      - 10.0.10.39
+
+- name: Create certificates for keystore
+  openssl_certificate:
+    csr_path: "certificates/{{ inventory_hostname }}_cert.csr"
+    path: "certificates/{{ inventory_hostname }}_public.crt"
+    privatekey_path: "certificates/{{ inventory_hostname }}_private.key"
+    provider: "{{ ssl_certificate_provider }}"
