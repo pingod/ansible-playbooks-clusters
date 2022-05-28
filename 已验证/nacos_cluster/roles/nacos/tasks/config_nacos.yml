@@ -6,7 +6,7 @@
   #run_once: true
   #when: ansible_hostname == 'that_hostname_you_want_to_run'
   when: inventory_hostname == play_hosts[0]
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Copy cluster.conf
   template: src=cluster.conf dest="{{ install_dir }}/nacos/conf" mode=644 owner={{ user }} group = {{ group }}
@@ -31,11 +31,11 @@
 
 - name: Nacos service status
   shell: "systemctl status nacos.service"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Nacos service ports status
   shell: "netstat -tnlp|grep java"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Guaranteed permissions
   shell: "chmod 777 -R {{install_dir}}/nacos"
