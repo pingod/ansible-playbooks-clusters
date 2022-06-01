@@ -1,0 +1,10 @@
+---
+- name: Install and configure edgevpn Server
+  hosts: edgevpn
+  become: true
+  gather_facts: true
+  vars:
+    project_env: self
+
+  roles:
+    - role: ./ansible-role-edgevpn
