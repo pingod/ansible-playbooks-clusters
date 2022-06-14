@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: node-exporter-ext
+    prometheus: ipaas
+  name: node-exporter-ext
+spec:
+  endpoints:
+    - interval: 30s
+      port: http-9100
+      scheme: http
+  jobLabel: app
+  namespaceSelector:
+  #下面的ns为service所在的ns名称
+    matchNames:
+      - kubesphere-monitoring-system
+  selector: {}
