@@ -4,7 +4,8 @@
   become: true
   gather_facts: true
   vars:
-    install_force: true
+    install_force: false
+    install_docker_ce: true
     # docker-compose bin will install path
     docker_compose_install_path: '/usr/local/bin'
     # docker-compose bin file path
@@ -19,6 +20,15 @@
     cpu_arch: "{{ cpu_arch_map[ansible_architecture] | default(ansible_architecture) }}"
 
   tasks:
+  - name: Install  | Check if docker-ce has been installed .
+    shell: which docker
+    register: docker_ce_install_result
+
+  - name: Install  |  Install docker-ce,if not been installed .
+    shell: curl -L get.docker.io|sh -
+    #rc: shell命令返回的code，相当于shell里面的 $?
+    when: docker_ce_install_result.rc != 0
+
   #  判断本地文件是否存在
   - name: Install  | Check if local docker-compose bin file exist .
     delegate_to: localhost
