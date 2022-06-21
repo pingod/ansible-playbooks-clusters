@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+    name: kube-prometheus-exporter-es #此处name要和上一步创建的service对象name相同
+    namespace: kubesphere-monitoring-system
+    labels:
+        k8s-app: es-metrics
+subsets:
+- addresses:
+  - ip: 10.2.115.96
+  - ip: 10.2.104.246
+  - ip: 10.2.157.108
+  ports:
+    - name: metrics
+      port: 9114
+      protocol: TCP

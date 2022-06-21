@@ -1,0 +1,53 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    meta.helm.sh/release-name: blackbox-exporter
+    meta.helm.sh/release-namespace: kubesphere-monitoring-system
+  labels:
+    app.kubernetes.io/instance: blackbox-exporter
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/version: 0.20.0
+    helm.sh/chart: prometheus-blackbox-exporter-5.8.0
+  name: blackbox-exporter-http-2xx-01
+  namespace: kubesphere-monitoring-system
+spec:
+  endpoints:
+  - interval: 15s
+    relabelings:
+    - action: replace
+      regex: (.*)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_service_label_cluster
+      targetLabel: cluster
+    - action: replace
+      regex: (.*)
+      replacement: $1
+      sourceLabels:
+      - __param_module
+      targetLabel: module
+    - action: replace
+      regex: (.*)
+      replacement: $1
+      sourceLabels:
+      - __param_target
+      targetLabel: target
+    params:
+      module:
+      - http_2xx
+      target:
+      - http://10.2.17.83:9091/apisix/prometheus/metrics # apisix-gateway pod ip.
+      - http://10.100.30.69:8003     # authority-center Cluster ip.
+      - http://10.100.13.32:8001     # chervon-technology-center Cluster ip.
+    path: /probe
+    port: http
+  jobLabel: blackbox-exporter
+  namespaceSelector:
+    matchNames:
+    - kubesphere-monitoring-system
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: blackbox-exporter
+      app.kubernetes.io/name: prometheus-blackbox-exporter

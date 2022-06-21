@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+    name: kube-prometheus-exporter-mysql #此处name要和上一步创建的service对象name相同
+    namespace: kubesphere-monitoring-system
+    labels:
+        k8s-app: mysql-metrics
+subsets:
+- addresses:
+  - ip: 10.2.102.133   # ip信息为外部mysql实例所在的主机的ip地址
+  - ip: 10.2.141.252
+  ports:
+    - name: metrics
+      port: 9104
+      protocol: TCP

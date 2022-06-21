@@ -1,0 +1,14 @@
+---
+# author: lework
+
+software_files_path: "/opt/software"
+software_install_path: "/opt/mycat"
+
+mycat_version: "1.6.7.6"
+
+mycat_file: "Mycat-server-1.6.7.6-release-20220524173810-linux.tar.gz"
+mycat_file_path: "{{ software_files_path }}/{{ mycat_file }}"
+mycat_file_url: "http://dl.mycat.org.cn/1.6.7.6/20220524101549/Mycat-server-1.6.7.6-release-20220524173810-linux.tar.gz"
+#mycat_file_url_1: "http://dl.mycat.org.cn/2.0/1.22-release/mycat2-1.22-release-jar-with-dependencies.jar"
+#mycat_file_url_2: http://dl.mycat.org.cn/2.0/install-template/mycat2-install-template-1.21.zip
+mycat_conf_path: "{{ software_install_path }}/mycat/conf"

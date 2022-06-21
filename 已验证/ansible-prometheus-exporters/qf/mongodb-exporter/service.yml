@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:   #此处label要和上一步创建的servicemonitor对象的seletor匹配
+    app: exporter-mongodb
+    component: mongodb-exporter
+  name: kube-prometheus-exporter-mongodb
+  namespace: kubesphere-monitoring-system
+spec:
+  type: ClusterIP
+  ports:
+  - name: metrics
+    port: 9216
+    protocol: TCP
+    targetPort: 9216

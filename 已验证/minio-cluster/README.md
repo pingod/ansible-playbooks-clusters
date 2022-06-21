@@ -5,8 +5,8 @@ It also create some buckets and users with proper ACLs
 
 # 功能说明
 1. 一键创建minio集群(注意集群需要至少4块硬盘)
-2. 创建支持https的console(自签证书)
-3. 创建Console的Demo用户和权限
+2. 创建支持https的console
+3. 创建Demo用户和权限
 4. minio服务开机自启动
 
 # 使用说明

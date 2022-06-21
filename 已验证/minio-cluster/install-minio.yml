@@ -41,6 +41,6 @@
         minio_certgen_client_key: "{{ lookup('file','certificates/' + 'client' + '.key') }}"
         minio_certgen_client_cert: "{{ lookup('file','certificates/' + 'client' + '.crt') }}"
       when: minio_enable_tls and cert_create_method == 'certgen'
-
+      
   roles:
     - role: ./ansible-role-minio

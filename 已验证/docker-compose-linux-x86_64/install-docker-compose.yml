@@ -1,0 +1,75 @@
+---
+- name: Install docker-compose bin
+  hosts: ts-ubi-n2n
+  become: true
+  gather_facts: true
+  vars:
+    install_force: true
+    # docker-compose bin will install path
+    docker_compose_install_path: '/usr/local/bin'
+    # docker-compose bin file path
+    docker_compose_server_bin: "{{ docker_compose_install_path }}/docker-compose"
+
+    cpu_arch_map:
+      i386: '386'
+      x86_64: 'amd64'
+      aarch64: 'arm64'
+      armv7l: 'arm'
+      armv6l: 'arm6vl'
+    cpu_arch: "{{ cpu_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+
+  tasks:
+  #  判断本地文件是否存在
+  - name: Install  | Check if local docker-compose bin file exist .
+    delegate_to: localhost
+    stat: path=./ansible-role-docker-compose/files/docker-compose
+    register: docker_compose_bin_local_file_result
+  
+  #  拷贝本地二进制文件到远端
+  - name: Copy Package To Remote Server
+    copy: src=./ansible-role-docker-compose/files/docker-compose dest={{ docker_compose_install_path }} mode=755
+    when: docker_compose_bin_local_file_result.stat.exists 
+  
+  # 判断远端二进制文件是否存在
+  - name: Install  | Check if remote docker-compose bin file exist .
+    stat: path={{ docker_compose_server_bin }}
+    register: docker_compose_bin_remote_file_result
+
+  # 远端二进制文件存在则删除
+  - name: Remove docker-compose bin file 
+    file:
+      state: absent
+      path: "{{ item }}"
+    with_items:
+      - "{{ docker_compose_server_bin }}"
+    when: docker_compose_bin_remote_file_result.stat.exists and install_force is true
+
+  # 定义下载地址
+  - name: Compose the docker-compose server download url
+    set_fact:    
+      _docker_compose_server_download_url: "https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-{{ ansible_architecture }}"
+    tags: download
+    when: not docker_compose_bin_local_file_result.stat.exists
+  
+  - name: "Get the docker-compose server checksum for {{ ansible_architecture }} architecture"
+    set_fact:
+      _docker_compose_server_checksum: "{{ lookup('url', _docker_compose_server_download_url + '.sha256').split(' ')[0] }}"
+    tags: download
+    when: not docker_compose_bin_remote_file_result.stat.exists
+    ignore_errors: True
+  
+  #  如果远端没有，则远端开始下载docker-compose二进制文件
+  - name: Download the docker-compose bin file
+    get_url:
+      url: "{{ _docker_compose_server_download_url }}"
+      dest: "{{ docker_compose_server_bin }}"
+      owner: "root"
+      group: "root"
+      mode: 0755
+      checksum: "sha256:{{ _docker_compose_server_checksum }}"
+    register: _download_server
+    until: _download_server is succeeded
+    retries: 5
+    delay: 2
+    tags: download
+    when: not docker_compose_bin_remote_file_result.stat.exists or install_force is true

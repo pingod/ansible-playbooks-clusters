@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: exporter-redis
+    component: redis-exporter
+    prometheus: kube-prometheus  # 此处label要和prometheus的crd的serviceMonitorSelector匹配
+  name: kube-prometheus-exporter-redis
+  namespace: kubesphere-monitoring-system
+spec:
+  endpoints:
+  - interval: 15s
+    port: metrics
+  jobLabel: component
+  namespaceSelector:
+    matchNames:
+    - kubesphere-monitoring-system
+  selector:
+    matchLabels:
+      app: exporter-redis
+      component: redis-exporter
