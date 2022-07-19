@@ -39,7 +39,7 @@
   get_url:
     url: "https://github.com/alibaba/nacos/releases/download/{{ nacos_version }}/nacos-server-{{ nacos_version }}.tar.gz"
     dest: "/tmp/"
-    owner: "{{ ansible_user }}"
+    #owner: "{{ ansible_user }}"
   tags: download,local
   when: not nacos_local_package_tar_result.stat.exists
 

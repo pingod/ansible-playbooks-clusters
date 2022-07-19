@@ -1,5 +1,8 @@
 ---
-nacos_version: 2.1.0
+#nacos_version: 2.0.2
+nacos_version: 2.0.3
+
+#nacos_version: 1.4.3
 
 #nacos进程运行用户
 user: "nacos"
