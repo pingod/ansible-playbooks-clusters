@@ -19,33 +19,7 @@ host_key_checking = False
 3、配置主机清单：
 
 ```bash
-$ cd redis-cluster-ubuntu18
-$ vim hosts.yml
-all:
-  vars:
-    # SSH 用户
-    ansible_user: zze
-    # SSH 密码
-    ansible_ssh_pass: root1234
-    # sudo 提权密码
-    ansible_sudo_pass: root1234
-    # 如果你需要使用其它版本的 Redis，可通过 http://download.redis.io/releases/ 下载源码包进行编译，所以将编译好的二进制文件拷贝到下面 bin_dir 指定的目录即可 
-    # 注意编译前需要安装libsystemd-dev(systemd-devel on CentOS),而后执行make USE_SYSTEMD=yes  
-    bin_dir: ./redis-6.2.7/bin-ubuntu18
-    # 安装目录
-    install_dir: /opt/apps
-    # 主实例端口
-    master_port: 6379
-    # 从实例端口
-    slave_port: 6380
-    # Redis 密码
-    password: 123
-    # 集群副本数
-    cluster_replicas: 1
-  hosts: # 集群节点
-    10.1.30.12:
-    10.1.30.13:
-    10.1.30.41:
+$ vim hosts
 ```
 
 > 上述配置会在 `10.1.30.12` 、`10.1.30.13` 和 `10.1.30.41` 中各安装两个 Redis 实例，Master 实例占用 `master_port` 指定的端口，Slave 实例占用 `slave_port` 指定的端口。

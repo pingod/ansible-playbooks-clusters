@@ -5,7 +5,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/redis-server /opt/apps/redis_{{ master_port }}/conf/redis.conf --supervised systemd
+ExecStart=/usr/local/bin/redis-server {{ install_dir }}/redis_{{ master_port }}/conf/redis.conf --supervised systemd
 ExecStop=/usr/local/bin/redis-cli shutdown
 Type=notify
 User=redis

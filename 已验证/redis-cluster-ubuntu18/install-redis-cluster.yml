@@ -11,7 +11,7 @@
     # Redis 编译好的二进制文件目录
     bin_dir: ./redis-6.2.7/bin-ubuntu18
     # 安装目录
-    install_dir: /opt/middleware
+    install_dir: /opt/middleware/redis
     # 主实例端口
     master_port: 6379
     # 从实例端口
@@ -30,5 +30,3 @@
   # 启动服务
   - role: start_service
     tags: start_service
-
- 
