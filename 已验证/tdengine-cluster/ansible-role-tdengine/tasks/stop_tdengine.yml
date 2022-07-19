@@ -1,0 +1,11 @@
+# 停止tdengine服务
+- name: stop tdengine
+  command: "systemctl stop taosd"
+  register: tdengine_result
+  become_user: "{{ superuser}} "
+  become: true
+
+# 打印执行结果
+- name: print tdengine msg
+  debug: 
+    msg: " {{ tdengine_result }} "

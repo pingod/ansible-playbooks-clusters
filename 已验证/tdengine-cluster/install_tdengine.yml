@@ -1,0 +1,12 @@
+---
+- name: Install and configure TDengine Server
+  hosts: tdengine_server
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Download tdengins files for install
+      include_tasks: ./ansible-role-tdengine/tasks/before_install_tdengine.yml
+
+  roles:
+    - role: ./ansible-role-tdengine

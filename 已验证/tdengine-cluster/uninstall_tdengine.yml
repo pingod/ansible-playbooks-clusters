@@ -1,0 +1,11 @@
+---
+- name: Uninstall  TDengine Server
+  hosts: tdengine_server
+  gather_facts: true
+
+  pre_tasks:
+    - name: Uninstall  TDengine Server
+      include_tasks: ./ansible-role-tdengine/tasks/start_uninstall.yml
+
+  # roles:
+  #   - role: ./ansible-role-tdengine

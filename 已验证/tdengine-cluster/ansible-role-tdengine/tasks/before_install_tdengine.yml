@@ -1,0 +1,47 @@
+# 创建ansible临时目录和tdengine安装目录
+- name: Create ansible tmp and install dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    # owner: "{{ tdengine_user }} "
+    # group: "{{ tdengine_password }}"
+  loop:
+    - "{{ tmp_dir }}"
+    - "{{ tdengine_install_path }}"
+
+#  判断本地文件是否存在
+- name: Install  | Check if local tdengine bin file exist .
+  delegate_to: localhost
+  stat: path=./files/{{ tdengine_version }}-Linux-x64.tar.gz
+  register: tdengine_bin_local_file_result
+
+#  拷贝本地二进制文件到远端
+- name: Copy Package To Remote Server
+  copy: src=./files/{{ tdengine_version }}-Linux-x64.tar.gz dest={{ tdengine_install_path }} owner={{ tdengine_password }} mode=755
+  when: tdengine_bin_local_file_result.stat.exists and use_local_file is true
+
+#  判断远端二进制文件是否存在
+- name: Install  | Check if remote tdengine bin file exist .
+  stat: path={{ tdengine_install_path }}/{{ tdengine_version }}-Linux-x64.tar.gz
+  register: tdengine_bin_remote_file_result
+
+#  如果远端没有，则远端开始下载tdengine二进制文件
+- name: Compose the tdengine server download url
+  set_fact:
+    _tdengine_server_download_url: "https://www.taosdata.com/assets-download/{{ tdengine_version }}-Linux-x64.tar.gz"
+  tags: download
+  when: not tdengine_bin_local_file_result.stat.exists or use_local_file is false
+
+- name: Download the tdengine file from remote
+  get_url:
+    url: "{{ _tdengine_server_download_url }}"
+    dest: "{{ tdengine_install_path }}"
+    # owner: "root"
+    # group: "root"
+    # mode: 0755
+  register: _download_server
+  until: _download_server is succeeded
+  retries: 5
+  delay: 2
+  tags: download
+  when: not tdengine_bin_remote_file_result.stat.exists

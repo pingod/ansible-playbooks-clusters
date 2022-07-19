@@ -1,0 +1,22 @@
+# 启动tdengine服务
+- name: start tdengine
+  command: "systemctl start taosd"
+  register: tdengine_result
+  become_user: "{{ superuser}} "
+  become: true
+
+# 创建集群节点
+- name: create dnodes
+  command: taos -s "CREATE DNODE '{{ hostvars[item].fqdn }}:{{ tdengine_port }}';SHOW DNODES;"
+  register: tdengine_result
+  when: role == "master"
+  with_items: 
+    - "{{ groups['tdengine_server'] }}"
+  # become_user: "{{ superuser }} "
+  # become: true
+
+# 打印执行结果
+- name: print tdengine msg
+  debug: 
+    msg: " {{ tdengine_result }} "
+

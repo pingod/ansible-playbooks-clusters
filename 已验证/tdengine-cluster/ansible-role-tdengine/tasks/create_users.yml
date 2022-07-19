@@ -1,0 +1,47 @@
+- hosts: all
+  tasks:
+    # 创建普通用户
+    - name: create user
+      user:
+        name = {{ tdengine_user }}
+        shell = /bin/bash
+        createhome = yes
+    
+    # 设置用户密码	
+    - name: set user passwd
+      shell: echo "{{ userpasswd }}" | passwd --stdin "{{ tdengine_password }}"
+      when: userpasswd != ''
+    
+    # 设置SSH互信
+    - name: set authorized key
+      authorized_key:
+        user: "{{ tdengine_user }}"
+        key: "{{ lookup('file', '/home/{{ tdengine_user }}/.ssh/id_rsa.pub') }}"
+        state: present   
+     
+    # 配置sudo不需要密码（普通用户）
+    - name: update sudoers file for tdengine_user
+      lineinfile:
+        dest: /etc/sudoers
+        insertafter: EOF
+        line: "{{ tdengine_user }} ALL=(ALL) NOPASSWD: ALL*"
+        regexp: "*{{ tdengine_user }}.*NOPASSWD"
+        state: present
+        
+    # 配置sudo不需要密码（超级用户）
+    - name: update sudoers file for superuser
+      lineinfile:
+        dest: /etc/sudoers
+        insertafter: EOF
+        line: "{{ superuser }} ALL=(ALL) ALL"
+        regexp: "*{{ superuser }}"
+        state: present
+    
+    # 去掉只有拥有tty的用户才能使用sudo
+    - name: update sudoers file add "Defaults
+      lineinfile:
+        dest: /etc/sudoers
+        insertafter: EOF
+        line: 'Defaults !requiretty*'
+        regexp: '*Defaults.*!requiretty'
+        state: present

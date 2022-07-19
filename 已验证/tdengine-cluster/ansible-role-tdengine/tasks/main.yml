@@ -1,0 +1,7 @@
+
+---
+# Install tdengine Server
+- include_tasks: start_install.yml
+
+# Start tdengine Server
+- include_tasks: start_tdengine.yml

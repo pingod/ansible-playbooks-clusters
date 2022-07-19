@@ -1,0 +1,105 @@
+---
+# 解压Tdengine 安装包  
+- name: Extract TDengine
+  unarchive:
+    src: "{{ tdengine_install_path }}/{{ tdengine_version }}-Linux-x64.tar.gz"
+    dest: "{{ tdengine_install_path }}"
+    creates: "{{ tdengine_install_path }}/{{ tdengine_version }}.tar.gz"
+    remote_src: yes
+  # become_user: "{{ superuser }}"
+  # become: true
+
+# 创建Tdengine 的日志目录  
+- name: Create Logdir
+  file:
+    path: "{{ tdengine_install_path }}/log"
+    # owner: "{{ tdengine_user }}"
+    # group: "{{ tdengine_password }}"
+    recurse: true
+    state: directory
+  # become_user: "{{ superuser }}"
+  # become: true
+
+# 创建Tdengine 的数据目录  
+- name: Create Datadir
+  file:
+    path: "{{ tdengine_install_path }}/data"
+    # owner: "{{ tdengine_user }}"
+    # group: "{{ tdengine_password }}"
+    recurse: yes
+    state: directory
+  # become_user: "{{ superuser }}"
+  # become: true
+
+
+# 创建多个数据存储目录（如果配置则生效）
+- name: Create multidata directory
+  file:
+    path: "{{ item }} "
+    # owner: "{{ tdengine_user }} "
+    # group: "{{ tdengine_password }}"
+    recurse: yes
+    state: directory
+  register: exec_result
+  when: tdengine_data_dirs is defined
+  with_items:
+    - "{{ tdengine_data_dirs.split(',')  }} "
+  # become_user: "{{ superuser }} "
+  # become: true
+
+# 创建临时目录
+- name:  Create tmpdir
+  file:
+    path: "{{ tdengine_install_path }}/tmp"
+    # owner: "{{ tdengine_user }}"
+    # group: "{{ tdengine_password }}"
+    recurse: true
+    state: directory
+  # become_user: "{{ superuser }} "
+  # become: true
+
+# 添加HOST映射（多个节点都需加入）
+- name: Add FQDN to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: "{{ item }}  {{ hostvars[item].fqdn }} "
+  # become_user: "{{ superuser }}"
+  # become: true
+  with_items:
+    - "{{ groups['tdengine_server'] }}"
+
+# 更新安装脚本（将交互的选项改为静默,避免自动化时阻塞）
+- name: update Install.sh
+  lineinfile:
+    dest: "{{ tdengine_install_path }}/{{ tdengine_version }}/install.sh"
+    line: '{{ item }}="{{ master_fqdn }}":"{{ tdengine_port }}"'
+    regexp: "read {{ item }}"
+    state: present
+  with_items:
+    - "firstEp"
+    - "emailAddr"
+  # become_user: "{{ superuser }}"
+  # become: true
+
+# 安装Tdengine服务
+- name: Install TDengine
+  shell: "cd {{ tdengine_install_path }}/{{ tdengine_version }} && ./install.sh"
+  register: install_result
+  # become_user: "{{ superuser }}"
+  # become: true
+
+# 修改Tdengine的配置文件
+- name: Modify TDengine conf
+  template:
+    src: taos.cfg.j2
+    dest: "/etc/taos/taos.cfg"
+    # owner: "{{ tdengine_user }} "
+    # group: "{{ tdengine_password }} "
+  # become_user: "{{ superuser }} "
+  # become: true
+
+# 输出执行结果
+- name: print result
+  debug:
+    msg: "{{ install_result }} "

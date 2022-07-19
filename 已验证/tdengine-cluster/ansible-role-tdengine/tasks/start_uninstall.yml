@@ -1,0 +1,59 @@
+# ---
+# - hosts: tdengine_server
+#   user: root
+#   gather_facts: true
+#   tasks:
+    # 检查TDengine服务是否安装
+    - name: Check TDengine
+      command: "taos --version"
+      register: check_result
+      ignore_errors: True
+
+    # 停止tdengine服务
+    - name: stop tdengine
+      command: "systemctl stop taosd"
+      register: tdengine_result
+      ignore_errors: true
+
+    
+    # 卸载tdengine服务
+    - name: Uninstall tdengine
+      # shell: "cd {{ tdengine_install_path }}/{{ tdengine_version }} && rmtaos"
+      shell: "rmtaos"
+      register: tdengine_result
+      # when: check_result.rc == 0
+      ignore_errors: true
+
+    
+    # 清除tdengine的遗留数据, 包含配置文件
+    - name: Clear tdengine data
+      file: 
+        path: "{{ item }}"
+        state: absent
+      with_items: 
+       - "/etc/taos/"
+       - "/opt/middleware/TDengine-server/TDengine-server-2.6.0.8"
+       - "/opt/middleware/TDengine-server/data/"
+       - "/opt/middleware/TDengine-server/log/"
+       - "/opt/middleware/TDengine-server/tmp/"
+      #  - "{{ tdengine_install_path }}/{{ tdengine_version }}"
+      ignore_errors: true
+
+
+
+    # 清除tdengine的遗留数据(如果配置了多个目录也做清除)
+    - name: Clear tdengine multi data
+      file: 
+        path: "{{ item }}"
+        state: absent
+      with_items: 
+        - "{{ tdengine_data_dirs.split(',') }}"
+      when: tdengine_data_dirs is defined
+      ignore_errors: true
+
+    # # 打印执行结果
+    # - name: print tdengine msg
+    #   debug: 
+    #     msg: "{{ tdengine_result }}"
+    
+    
