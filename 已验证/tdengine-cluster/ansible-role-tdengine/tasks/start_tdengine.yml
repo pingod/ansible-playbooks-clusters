@@ -2,8 +2,12 @@
 - name: start tdengine
   command: "systemctl start taosd"
   register: tdengine_result
-  become_user: "{{ superuser}} "
-  become: true
+
+# 启动tdengine的taosadapter服务
+- name: start  taosadapter
+  command: "systemctl start taosadapter"
+  register: tdengine_taosadapter_result
+
 
 # 创建集群节点
 - name: create dnodes
