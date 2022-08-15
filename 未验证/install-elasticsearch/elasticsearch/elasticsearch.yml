@@ -1,6 +1,6 @@
 ---
 
-- hosts: localhost
+- hosts: elastic
   user: root
   vars_files:
     - "vars/elasticsearch.yml"

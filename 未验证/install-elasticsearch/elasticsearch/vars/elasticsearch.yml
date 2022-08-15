@@ -1,12 +1,10 @@
 ---
 # elasticsearch version
-elasticsearch_version: 7.5.1
+elasticsearch_version: 8.3.2
 
 # elasticsearch user
 user: "elastic"
 group: "elastic"
-
-
 
 jvm_heap_size: 8
 
@@ -25,8 +23,8 @@ firewall_ports:
   - "{{ random_port }}"
 
 # env path
-install_dir: "/data/{{ user }}"
-download_path: "/root/"               # your local download path
+install_dir: "/opt/middleware/elasticsearch"
+download_path: "/tmp/"               # your local download path
 tmp_path: "/tmp"
 
 # host group
@@ -45,4 +43,4 @@ es_tmp_pass: cherbini123
 
 elastic_pass: vLo9
 
-loadbalance: 192.168.0.1
+loadbalance: 

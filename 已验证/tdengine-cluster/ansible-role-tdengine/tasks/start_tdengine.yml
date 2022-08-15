@@ -22,5 +22,4 @@
 # 打印执行结果
 - name: print tdengine msg
   debug: 
-    msg: " {{ tdengine_result }} "
-
+    msg: "{{ tdengine_result }}"

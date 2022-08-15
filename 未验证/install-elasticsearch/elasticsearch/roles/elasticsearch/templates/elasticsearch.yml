@@ -14,13 +14,13 @@
 #
 # Use a descriptive name for your cluster:
 #
-cluster.name: xjl-elasticsearch
+cluster.name: elasticsearch-cluster01
 #
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-node.name: xjl-node-{% for ip in groups[elasticsearch_hosts] %}{% if  ip  == inventory_hostname %}{{loop.index-1}}{% endif %}{% endfor %}
+node.name: node-{% for ip in groups[elasticsearch_hosts] %}{% if  ip  == inventory_hostname %}{{loop.index-1}}{% endif %}{% endfor %}
 
 node.master: true
 node.data: true
@@ -105,4 +105,3 @@ xpack.security.transport.ssl.enabled: true
 xpack.security.transport.ssl.verification_mode: certificate
 xpack.security.transport.ssl.keystore.path: certs/elastic-certificates.p12
 xpack.security.transport.ssl.truststore.path: certs/elastic-certificates.p12
-
