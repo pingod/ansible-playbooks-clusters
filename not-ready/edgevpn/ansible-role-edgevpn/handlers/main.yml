@@ -1,0 +1,11 @@
+---
+- name: reload edgevpn systemd
+  systemd:
+    name: edgevpn
+    daemon_reload: true
+
+- name: restart edgevpn
+  service:
+    name: edgevpn
+    state: restarted
+    enabled: yes

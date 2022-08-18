@@ -1,5 +1,0 @@
-[tdengine_server]
-#10.16.161.186:22 fqdn=taosi role-master ansible_ssh_port=22 ansible_ssh_user=root ansible_ssh_pass=archforce
-10.3.117.162   fqdn=tdengine-master01-dev role=master 
-10.3.117.171   fqdn=tdengine-dnode01-dev  role=dnode
-10.3.142.40    fqdn=tdengine-dnode02-dev  role=dnode

@@ -1,0 +1,80 @@
+---
+# 创建帐号
+# groupadd mysql
+# useradd -g mysql -d /usr/local/mysql -s /sbin/nologin -M -n mysql
+ - name: Install | Create mysql user
+   user: name=mysql shell=/sbin/nologin home=/usr/local/mysql createhome=no state=present
+   ignore_errors: True
+ - name: Install | Make dir /opt/mysql
+   file: path=/opt/mysql state=directory owner=mysql group=mysql
+
+
+#  判断目标主机上压缩包是否存在
+ - name: Install  | Check if MySQL package tar file exist .
+   stat: path=/opt/mysql/{{ mysql_package }}
+   register: mysql_package_tar_result
+
+# 由本地传输mysql安装包到目标主机、并把安装包解压到/opt/mysql
+ - name: Install | Transfer MySQL install package to remote host to /opt/mysql/
+   copy:
+    src: "{{ software_files_path }}/{{ mysql_package }}"
+    dest: "/opt/mysql/{{ mysql_package }}"
+    force: no
+    when: not mysql_package_tar_result.stat.exists
+
+
+#  判断解压后的目录是否存在
+ - name: Install  | Check if MySQL DIR exist .
+   stat: path=/opt/mysql/{{ mysql_dirname }}
+   register: mysql_dir_result
+
+ - name: Install | Unarchive and rename MySQL package
+   shell: "{{ item }} chdir=/opt/mysql/"
+   with_items:
+    - "tar -xvf {{ mysql_package }}"
+    - "mv {{ mysql_package | regex_replace('.tar.gz','') }}  {{ mysql_dirname }}"
+    - "chown -R mysql:mysql {{ mysql_dirname }}"
+   when: not mysql_dir_result.stat.exists
+
+
+# 创建连接文件
+ - name: Install | Make link /opt/mysql/mysql-xx.yy.zz to /usr/local/mysql
+   file:
+    src: /opt/mysql/{{ mysql_dirname }}
+    dest: '{{ mysql_basedir }}'
+    state: link
+    owner: mysql
+    group: mysql
+
+# 解决 /usr/local/percona/bin/mysql_config 里面的路径问题
+ - name: Install | Make link {{ mysql_basedir }} to /usr/local/Percona-Server-xxx.yyy-23-Linux.x86_64.ssl101/
+   when: mysql_branch == 'percona'
+   file:
+    src: '{{ mysql_basedir }}'
+    dest: "{{ software_install_path }}/{{ mysql_package | regex_replace('.tar.gz','') }}"
+    state: link
+    owner: mysql
+    group: mysql
+
+#导出mysql的库文件
+ - name: Install | Export MySQL share object (*.os)
+   template:
+    src: ../templates/mysql.conf
+    dest: /etc/ld.so.conf.d/mysql.conf
+
+#加载共享库
+ - name: Install | Load share object
+   shell: ldconfig
+
+#导出PATH环境变量
+ - name: Install | Export path env variable
+   lineinfile:
+    path: /etc/profile
+    line: export PATH={{ mysql_basedir }}/bin/:$PATH
+    insertafter: EOF
+
+ - name: Install | Export path env to /root/.bashrc
+   lineinfile:
+    path: /root/.bashrc
+    line: export PATH={{ mysql_basedir }}/bin/:$PATH
+    insertafter: EOF

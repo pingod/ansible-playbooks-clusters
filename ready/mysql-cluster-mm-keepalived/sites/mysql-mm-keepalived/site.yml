@@ -1,0 +1,20 @@
+---
+# MySQL Master-Master + Keepalived 安装
+- name: Install MySQL with Master-Master Nodes
+  hosts: all
+  remote_user: root
+  vars_files:
+    - ../../common/mysql/defaults/main.yml
+    - var/main.yml
+  roles:
+    - ../../common/mysql
+    - ../../common/slave
+
+- name: Install keepalived
+  hosts: all
+  remote_user: root
+  vars_files:
+    - ../../common/mysql/defaults/main.yml
+    - var/main.yml
+  roles:
+    - keepalived

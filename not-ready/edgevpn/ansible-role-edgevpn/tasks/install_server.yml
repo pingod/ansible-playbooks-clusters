@@ -1,0 +1,197 @@
+---
+- name: Create edgevpn group
+  group:
+    name: "{{ edgevpn_group }}"
+    state: present
+
+- name: Create edgevpn user
+  user:
+    name: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_group }}"
+    system: "yes"
+    shell: "/usr/sbin/nologin"
+
+- name: Create the edgevpn config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_group }}"
+    mode: 0750
+  with_items:
+    - "{{ edgevpn_etc_dir }}"
+    - "{{ edgevpn_cert_dir }}"
+    - "{{ edgevpn_policy_dir }}"
+
+- name: Create the edgevpn data storage directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_group }}"
+    mode: 0750
+  when: edgevpn_server_make_datadirs
+  with_items: "{{ edgevpn_server_datadirs }}"
+
+
+#  判断本地文件是否存在
+- name: Install  | Check if local edgevpn bin file exist .
+  delegate_to: localhost
+  stat: path=./ansible-role-edgevpn/files/edgevpn
+  register: edgevpn_bin_local_file_result
+
+#  拷贝本地二进制文件到远端
+- name: Copy Package To Remote Server
+  copy: src=./ansible-role-edgevpn/files/edgevpn dest={{ edgevpn_install_path }} owner={{ edgevpn_user }} mode=755
+  when: edgevpn_bin_local_file_result.stat.exists 
+
+#  判断远端二进制文件是否存在
+- name: Install  | Check if remote edgevpn bin file exist .
+  stat: path={{ edgevpn_server_bin }}
+  register: edgevpn_bin_remote_file_result
+
+#  如果远端没有，则远端开始下载edgevpn二进制文件
+- name: Compose the edgevpn server download url
+  set_fact:
+    _edgevpn_server_download_url: "https://github.com/mudler/edgevpn/releases/download/{{ edgevpn_bin_version }}/edgevpn-{{ edgevpn_bin_version }}-Linux-{{ go_arch }}.tar.gz"
+  tags: download
+  when: not edgevpn_bin_local_file_result.stat.exists
+
+- name: "Get the edgevpn server checksum for {{ go_arch }} architecture"
+  set_fact:
+    _edgevpn_server_checksum: "{{ lookup('url', _edgevpn_server_download_url + '.sha256sum').split(' ')[0] }}"
+  tags: download
+  when: not edgevpn_bin_remote_file_result.stat.exists
+
+- name: Download the edgevpn server
+  get_url:
+    url: "{{ _edgevpn_server_download_url }}"
+    dest: "{{ edgevpn_server_bin }}"
+    owner: "root"
+    group: "root"
+    mode: 0755
+    checksum: "sha256:{{ _edgevpn_server_checksum }}"
+  register: _download_server
+  until: _download_server is succeeded
+  retries: 5
+  delay: 2
+  notify: restart edgevpn
+  tags: download
+  when: not edgevpn_bin_remote_file_result.stat.exists
+
+- name: Generate the edgevpn server envfile
+  template:
+    src: edgevpn.env.j2
+    dest: "{{ edgevpn_server_envfile }}"
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_group }}"
+    mode: 0640
+  notify: restart edgevpn
+
+- name: Create the edgevpn server systemd config
+  template:
+    src: edgevpn.service.j2
+    dest: "/etc/systemd/system/edgevpn.service"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  notify:
+    - reload edgevpn systemd
+    - restart edgevpn
+
+- name: Copy openssl SSL private key file 
+  copy:
+    dest: "{{ edgevpn_cert_dir }}/private.key"
+    content: "{{ edgevpn_openssl_key }}"
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_user }}"
+    mode: 0644
+  become: true
+  when: edgevpn_enable_tls and cert_create_method == 'openssl'
+  notify: restart edgevpn
+
+- name: Copy openssl cert file
+  copy:
+    dest: "{{ edgevpn_cert_dir }}/public.crt"
+    content: "{{ edgevpn_openssl_cert }}"
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_user }}"
+    mode: 0644
+  become: true
+  when: edgevpn_enable_tls and cert_create_method == 'openssl'
+  notify: restart edgevpn
+
+- name: Copy certgen SSL private key file | server
+  copy:
+    dest: "{{ edgevpn_cert_dir }}/private.key"
+    content: "{{ edgevpn_certgen_server_key }}"
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_user }}"
+    mode: 0644
+  become: true
+  when: edgevpn_enable_tls and cert_create_method == 'certgen'
+  notify: restart edgevpn
+
+- name: Copy cert file | server
+  copy:
+    dest: "{{ edgevpn_cert_dir }}/public.crt"
+    content: "{{ edgevpn_certgen_server_cert }}"
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_user }}"
+    mode: 0644
+  become: true
+  when: edgevpn_enable_tls and cert_create_method == 'certgen'
+  notify: restart edgevpn
+
+- name: Copy certgen SSL private key file | client
+  copy:
+    dest: "{{ edgevpn_cert_dir }}/client.key"
+    content: "{{ edgevpn_certgen_client_key }}"
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_user }}"
+    mode: 0644
+  become: true
+  when: edgevpn_enable_tls and cert_create_method == 'certgen'
+  notify: restart edgevpn
+
+- name: Copy cert file | client
+  copy:
+    dest: "{{ edgevpn_cert_dir }}/client.crt"
+    content: "{{ edgevpn_certgen_client_cert }}"
+    owner: "{{ edgevpn_user }}"
+    group: "{{ edgevpn_user }}"
+    mode: 0644
+  become: true
+  when: edgevpn_enable_tls and cert_create_method == 'certgen'
+  notify: restart edgevpn
+
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Ensure edgevpn is started at boot
+  service:
+    name: edgevpn
+    enabled: true
+
+# - name: set secure edgevpn_url if not defined
+#   set_fact:
+#     edgevpn_url: "https://{{ edgevpn_server_address  | default('127.0.0.1') }}:{{ edgevpn_server_port }}"
+#   when: edgevpn_enable_tls  and edgevpn_url|length == 0
+
+# - name: set unsecure edgevpn_url if not defined
+#   set_fact:
+#     edgevpn_url: "http://{{ edgevpn_server_address  | default('127.0.0.1') }}:{{ edgevpn_server_port }}"
+#   when: not edgevpn_enable_tls and edgevpn_url|length == 0
+# - debug: var=edgevpn_url
+
+- name: set secure edgevpn_url if not defined
+  set_fact:
+    edgevpn_url: "https://127.0.0.1:{{ edgevpn_server_port }}"
+  when: edgevpn_enable_tls  and edgevpn_url|length == 0
+
+- name: set unsecure edgevpn_url if not defined
+  set_fact:
+    edgevpn_url: "http://127.0.0.1:{{ edgevpn_server_port }}"
+  when: not edgevpn_enable_tls and edgevpn_url|length == 0
+- debug: var=edgevpn_url

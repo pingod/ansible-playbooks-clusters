@@ -1,0 +1,12 @@
+---
+# Install edgevpn Server
+- include_tasks: install_server.yml
+  when: edgevpn_install_server
+
+# Install edgevpn Client
+- include_tasks: install_client.yml
+  when: edgevpn_install_client
+
+# Add local edgevpn server to edgevpn client
+- include_tasks: configure_server.yml
+  when: edgevpn_url|length > 0 and edgevpn_install_client

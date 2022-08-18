@@ -1,0 +1,85 @@
+---
+# Install server, client or both
+edgevpn_install_server: true
+edgevpn_install_client: true
+edgevpn_bin_version: v0.15.0
+
+# edgevpn unix user
+edgevpn_group: edgevpn
+edgevpn_user: edgevpn
+
+# edgevpn bin will install path
+edgevpn_install_path: /usr/local/bin
+
+# edgevpn bin file path
+edgevpn_server_bin: "{{ edgevpn_install_path }}/edgevpn"
+edgevpn_client_bin: "{{ edgevpn_install_path }}/edgevpn"
+
+# mino server config dirs
+edgevpn_etc_dir: /opt/edgevpn/etc
+edgevpn_cert_dir: "{{ edgevpn_etc_dir }}/ssl"
+edgevpn_policy_dir: "{{ edgevpn_etc_dir }}/policy"
+
+
+# mino server env file
+edgevpn_server_envfile: "{{ edgevpn_etc_dir }}/edgevpn.conf"
+
+# edgevpn credentials user and password
+edgevpn_url: ""
+edgevpn_root_user: "edgevpnadmin"
+edgevpn_root_password: "edgevpnadmin123"
+
+
+# edgevpn server listen address
+edgevpn_server_address: ""
+edgevpn_server_port: "9091"
+edgevpn_console_port: "9092"
+
+# edgevpn data directories
+# 若为单机部署,改写这里
+edgevpn_server_make_datadirs: true
+edgevpn_server_datadirs:
+  - '/mnt/data2'
+  - '/mnt/data3'
+
+# TLS
+ssl_certificate_provider: selfsigned
+# 决定使用那种方式生成证书(openssl(有问题) certgen)
+cert_create_method: certgen
+server_hostname: edgevpn.example.com
+edgevpn_enable_tls: true
+edgevpn_key: ""
+edgevpn_cert: ""
+
+
+cert_ips_will_include:
+    - "127.0.0.1"
+    - "localhost"
+    - "10.0.10.39"
+    - "10.0.10.38"
+    - "10.0.10.36"
+    - "192.168.122.231"
+    - "192.168.122.11"
+    - "192.168.122.12"
+
+# edgevpn client 连接时是否校验证书
+edgevpn_validate_certificate: false
+# edgevpn client alias
+edgevpn_alias: "myedgevpn"
+
+
+# edgevpn server cluster node list.
+# 若为集群部署，改写这里
+# 集群分布式模式需要至少4块盘
+edgevpn_server_cluster_nodes: 
+  - "https://10.0.10.36/mnt/data2"
+
+
+# edgevpn site region
+edgevpn_site_region: "us-east-1"
+
+# Additional environment variables to be set in edgevpn server environment
+edgevpn_server_env_extra: ""
+
+# Additional edgevpn server CLI options
+edgevpn_server_opts: ""

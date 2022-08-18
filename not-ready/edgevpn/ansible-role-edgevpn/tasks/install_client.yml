@@ -1,0 +1,45 @@
+---
+
+
+#  判断本地文件是否存在
+- name: Install  | Check if local edgevpn bin file exist .
+  delegate_to: localhost
+  stat: path=./ansible-role-edgevpn/files/edgevpn
+  register: edgevpn_client_bin_local_file_result
+
+#  拷贝本地二进制文件到远端
+- name: Copy Package To Remote Server
+  copy: src=./ansible-role-edgevpn/files/mc dest={{ edgevpn_install_path }} owner={{ edgevpn_user }} mode=755
+  when: edgevpn_client_bin_local_file_result.stat.exists 
+
+#  判断远端二进制文件是否存在
+- name: Install  | Check if remote edgevpn bin file exist .
+  stat: path={{ edgevpn_server_bin }}
+  register: edgevpn_client_bin_remote_file_result
+
+#  如果远端没有，则远端开始下载edgevpn client二进制文件
+- name: Compose the edgevpn client download base url
+  set_fact:
+    _edgevpn_client_download_url: "https://github.com/mudler/edgevpn/releases/download/{{ edgevpn_bin_version }}/edgevpn-{{ edgevpn_bin_version }}-Linux-{{ go_arch }}.tar.gz"
+  tags: download
+  when: not edgevpn_client_bin_local_file_result.stat.exists
+
+- name: "Get the edgevpn client checksum for {{ go_arch }} architecture"
+  set_fact:
+    _edgevpn_client_checksum: "{{ lookup('url', _edgevpn_client_download_url + '.sha256sum').split(' ')[0] }}"
+  tags: download
+  when: not edgevpn_client_bin_remote_file_result.stat.exists
+
+- name: Download the edgevpn client
+  get_url:
+    url: "{{ _edgevpn_client_download_url }}"
+    dest: "{{ edgevpn_client_bin }}"
+    owner: "root"
+    group: "root"
+    mode: 0755
+    checksum: "sha256:{{ _edgevpn_client_checksum }}"
+  register: _download_client
+  until: _download_client is succeeded
+  retries: 5
+  delay: 2
+  when: not edgevpn_client_bin_remote_file_result.stat.exists
