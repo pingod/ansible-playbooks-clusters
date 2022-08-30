@@ -1,0 +1,78 @@
+---
+
+# spark basic vars
+spark_url: "https://dlcdn.apache.org/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-hadoop{{ hadoop_spa_version }}.tgz"
+download_path: "/home/user/Downloads"
+spark_version: "3.0.3"
+hadoop_spa_version: "3.2"
+spark_path: "/home/hadoop/current"
+spark_config_path: "/home/hadoop/current/spark-{{spark_version}}/conf"
+spark_log: "/home/hadoop/current/spark-{{spark_version}}/logs"
+
+spark_create_path:
+  - "{{ spark_log }}"
+
+spark_eventLog_dir: "/user/spark/spark-logs"
+spark_history_fs_logDirectory: "/user/spark/spark-logs"
+
+spark_hdfs_path: 
+  - "{{ spark_eventLog_dir }}"
+  - "{{ spark_history_fs_logDirectory }}"
+
+#spark default conf
+spark_master: "yarn"
+spark_driver_memory: "512m"
+spark_yarn_am_memory: "512m"
+spark_executor_memory: "512m"
+
+# spark history server conf
+spark_eventLog_enabled: "true"
+spark_history_provider: "org.apache.spark.deploy.history.FsHistoryProvider"
+spark_history_fs_update_interval: "10s"
+spark_history_ui_port: 18080
+
+# spark configration 
+spark_default_conf:
+  - {
+      "name":"spark.eventLog.dir",
+      "value":"hdfs://{{ master_ip }}:{{ hdfs_port }}{{ spark_eventLog_dir }}"
+  }
+  - {
+      "name":"spark.history.fs.logDirectory",
+      "value":"hdfs://{{ master_ip }}:{{ hdfs_port }}{{ spark_eventLog_dir }}"
+  }
+  - {
+      "name":"spark.master",
+      "value":"{{ spark_master }}"
+  }
+  - {
+      "name":"spark.driver.memory",
+      "value":"{{ spark_driver_memory }}"
+  }
+  - {
+      "name":"spark.yarn.am.memory",
+      "value":"{{ spark_yarn_am_memory }}"
+  }
+  - {
+    "name":"spark.executor.memory",
+    "value":"{{ spark_executor_memory }}"
+  }
+  - {
+    "name":"spark.eventLog.enabled ",
+    "value":"{{ spark_eventLog_enabled }}"
+  }
+  - {
+    "name":"spark.history.provider",
+    "value":"{{ spark_history_provider }}"
+  }
+  - {
+    "name":"spark.history.fs.update.interval",
+    "value":"{{ spark_history_fs_update_interval }}"
+  }
+  - {
+    "name":"spark.history.ui.port ",
+    "value":"{{ spark_history_ui_port }}"
+  }
+
+firewall_ports:
+  - "{{ spark_history_ui_port }}"

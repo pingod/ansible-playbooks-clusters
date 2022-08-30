@@ -1,0 +1,11 @@
+---
+- include: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Copy Java Home Script (for non RedHat)
+  template: src=java_home.sh dest=/etc/profile.d mode=755
+
+- name: Set Java Home Script
+  shell: source /etc/profile.d/java_home.sh
+  args:
+    executable: /bin/bash

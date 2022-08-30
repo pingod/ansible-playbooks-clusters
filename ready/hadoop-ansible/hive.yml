@@ -1,0 +1,15 @@
+- hosts: hive 
+  remote_user: jon_doe
+  become: true
+  vars_files:
+   - vars/user.yml
+   - vars/var_basic.yml
+   - vars/var_master.yml
+   - vars/var_hive.yml
+  vars:
+     open_firewall: true
+     install_hive: true
+     config_hive: true
+     init_hive: true
+  roles:
+    - hive

@@ -1,0 +1,12 @@
+---
+- name: Create download directory {{ download_path }}
+  file: state=directory path={{ download_path }}
+
+- name: Download hive
+  get_url: url={{ hive_url }} dest={{ download_path }} mode=755
+
+#- name: Copy Hive
+#  copy: src={{ download_path }}/apache-hive-{{hive_version}}-bin.tar.gz dest=/tmp owner={{ user }} mode=755
+  
+- name: Unzip Hive
+  shell: "tar zxf {{ download_path }}/apache-hive-{{hive_version}}-bin.tar.gz -C {{ hive_path }} && mv {{ hive_path }}/apache-hive-{{hive_version}}-bin {{ hive_path }}/hive-{{hive_version}}"

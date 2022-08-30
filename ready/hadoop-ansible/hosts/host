@@ -1,0 +1,12 @@
+[master]
+10.4.16.238 ansible_user=root ansible_connection=ssh ansible_ssh_pass=pass ansible_sudo_pass=pass
+
+[workers]
+10.4.26.85 ansible_user=root ansible_connection=ssh ansible_ssh_pass=pass ansible_sudo_pass=pass
+10.4.20.55 ansible_user=root ansible_connection=ssh ansible_ssh_pass=pass  ansible_sudo_pass=pass
+
+[hive]
+10.4.16.238 ansible_user=root ansible_connection=ssh ansible_ssh_pass=pass ansible_sudo_pass=pass
+
+[spark]
+10.4.16.238 ansible_user=root ansible_connection=ssh ansible_ssh_pass=pass ansible_sudo_pass=pass

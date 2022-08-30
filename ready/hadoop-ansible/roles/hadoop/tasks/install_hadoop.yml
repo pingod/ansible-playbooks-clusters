@@ -1,0 +1,12 @@
+---
+- name: Create download directory {{ download_path }}
+  file: state=directory path={{ download_path }}
+
+- name: Download hadoop
+  get_url: url={{ hadoop_url }} dest={{ download_path }} mode=755
+
+#- name: Copy Hadoop  Use this if you have downladed the hadoop file to a local download_path already
+#  copy: src={{ download_path }}/hadoop-{{hadoop_version}}.tar.gz dest=/tmp owner={{ user }} mode=755
+  
+- name: Unzip Hadoop and create sym link
+  shell: "tar zxf {{ download_path }}/hadoop-{{hadoop_version}}.tar.gz -C {{ hadoop_path }} && ln -s {{ hadoop_path }}/hadoop-{{ hadoop_version }} {{ hadoop_path }}/current"

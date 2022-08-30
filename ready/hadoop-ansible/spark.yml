@@ -1,0 +1,15 @@
+- hosts: spark 
+  remote_user: jon_doe
+  become: true
+  vars_files:
+   - vars/user.yml
+   - vars/var_basic.yml
+   - vars/var_master.yml
+   - vars/var_spark.yml
+  vars:
+     open_firewall: true
+     install_spark: true
+     config_spark: true
+     init_spark: true
+  roles:
+    - spark

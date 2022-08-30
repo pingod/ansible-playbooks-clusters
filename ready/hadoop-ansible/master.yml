@@ -1,0 +1,20 @@
+- hosts: master 
+  remote_user: jon_doe
+  become: true
+  vars_files:
+   - vars/user.yml
+   - vars/var_basic.yml
+   - vars/var_master.yml
+  vars:
+     add_user: true
+     generate_key: true
+     open_firewall: true
+     disable_firewall: false
+     install_hadoop: true
+     config_hadoop: true
+  roles:
+    - user
+    - fetch_public_key
+    - authorized
+    - java
+    - hadoop

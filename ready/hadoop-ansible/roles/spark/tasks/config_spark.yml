@@ -1,0 +1,11 @@
+---
+- name: Copy spark default conf
+  template: src=spark-defaults.conf dest={{ spark_config_path }} mode=644 owner={{ user }} group = {{ group }}
+
+- name: Copy spark Env Script
+  template: src=spark_env.sh dest=/etc/profile.d/ mode=755
+
+- name: Set spark Env
+  shell: source /etc/profile.d/spark_env.sh
+  args:
+    executable: /bin/bash

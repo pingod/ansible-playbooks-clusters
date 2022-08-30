@@ -24,7 +24,7 @@
   when: add_user
 
 - name: Create Install Dir
-  file: path={{item}} state=directory owner={{ user }} group={{ group}} mode="u=rwx,g=r,o=r"
+  file: path={{ item }} state=directory owner={{ user }} group={{ group }} mode="u=rwx,g=r,o=r"
   with_items:
     - "{{ install_dir }}"
 
