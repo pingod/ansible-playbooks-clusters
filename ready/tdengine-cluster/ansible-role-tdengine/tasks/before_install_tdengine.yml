@@ -28,7 +28,7 @@
 #  如果远端没有，则远端开始下载tdengine二进制文件
 - name: Compose the tdengine server download url
   set_fact:
-    _tdengine_server_download_url: "https://www.taosdata.com/assets-download/{{ tdengine_version }}-Linux-x64.tar.gz"
+    _tdengine_server_download_url: "https://www.tdengine.com/assets-download/3.0/{{ tdengine_version }}-Linux-x64.tar.gz"
   tags: download
   when: not tdengine_bin_local_file_result.stat.exists or use_local_file is false
 

@@ -7,7 +7,7 @@ tdengine_port: 6030
 #tdengine_data_dirs: "/data/tdengine/datal, /data/tdengine/data2"
 #cmd: ''
 tmp_dir: "/tmp/{{ tdengine_version }}"
-tdengine_version: "TDengine-server-2.6.0.8"
+tdengine_version: "TDengine-server-3.0.1.1"
 tdengine_install_path: "/opt/middleware/TDengine-server"
 tdengine_config:
   ip: "{{ ansible_host } }"
