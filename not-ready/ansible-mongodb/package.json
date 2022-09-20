@@ -1,0 +1,23 @@
+{
+  "name": "ansible-mongodb",
+  "version": "3.0.0",
+  "description": "Configure the components of a MongoDB Cluster",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaackehle/ansible-mongodb.git"
+  },
+  "author": "Isaac Kehle (isaac@kehle.org)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/isaackehle/ansible-mongodb/issues"
+  },
+  "homepage": "https://github.com/isaackehle/ansible-mongodb#readme",
+  "main": "tasks/main.yml",
+  "keywords": [
+    "ansible"
+  ]
+}

@@ -1,13 +1,13 @@
 mysql_repl_user: repl
-mysql_repl_password: thundersoftprerepl
+mysql_repl_password: repl1234
 
-keepalived_vip: 10.4.19.70
+keepalived_vip: 10.4.20.196
 keepalived_vr_id: 82
 
 monitor_user: monitor
 monitor_pwd: thundersoftpremonitor
 
 mysql_port: 3306
-mysql_password: thundersoftprerooter
+mysql_password: thundersoftpreadmin
 
 interface: ens5

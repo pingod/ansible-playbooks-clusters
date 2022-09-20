@@ -12,8 +12,6 @@
     executable: /bin/bash
   #ignore_errors: True
 
-
-
 - name: Replication | Master |  Clear temp file tmp/master_slaves.sql
   file:
     dest: tmp/mysql_master_create_replication_user.sql
