@@ -1,0 +1,22 @@
+---
+
+- name: disable ufw firewall if exists
+  ansible.builtin.command: ufw disable
+  when: ansible_distribution in ['Debian', 'Ubuntu'] | list
+
+- name: disable firewalld service if exists
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: false
+    state: stopped
+  when: ansible_distribution in ['CentOS', 'RedHat'] | list
+
+- name: taking iptables backup | /opt/iptables-{{ ansible_date_time.date }}.bak
+  ansible.builtin.shell: "iptables-save > /opt/iptables-{{ ansible_date_time.date }}.bak"
+  args:
+    creates: "/opt/iptables-{{ ansible_date_time.date }}.bak"
+  ignore_errors: true
+
+- name: flushing all iptables rules if exists
+  ansible.builtin.command: iptables -F
+  ignore_errors: true

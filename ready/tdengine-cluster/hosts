@@ -1,16 +1,29 @@
 [tdengine_server]
 #10.16.161.186:22 fqdn=taosi role-master ansible_ssh_port=22 ansible_ssh_user=root ansible_ssh_pass=archforce
 #dev
-#10.2.115.96   fqdn=tdengine-master01-dev role=master 
-#10.2.104.246   fqdn=tdengine-dnode01-dev  role=dnode
+#10.2.115.96     fqdn=tdengine-master01-dev role=master
+#10.2.104.246    fqdn=tdengine-dnode01-dev  role=dnode
 #10.2.157.108    fqdn=tdengine-dnode02-dev  role=dnode
 
+#10.2.115.96     fqdn=10.2.115.96  role=master
+#10.2.104.246    fqdn=10.2.104.246  role=dnode
+#10.2.157.108    fqdn=10.2.157.108  role=dnode
+
+
 #sit
-#10.3.117.162   fqdn=tdengine-master01-sit role=master 
+#10.3.117.162   fqdn=tdengine-master01-sit role=master
 #10.3.117.171   fqdn=tdengine-dnode01-sit  role=dnode
 #10.3.142.40    fqdn=tdengine-dnode02-sit  role=dnode
 
+#10.3.117.162   fqdn=10.3.117.162  role=master
+#10.3.117.171   fqdn=10.3.117.171  role=dnode
+#10.3.142.40    fqdn=10.3.142.40   role=dnode
+
 #pre
-10.4.17.228   fqdn=tdengine-master01-pre role=master 
+10.4.17.228   fqdn=tdengine-master01-pre role=master
 10.4.25.86    fqdn=tdengine-dnode01-pre  role=dnode
 10.4.23.251   fqdn=tdengine-dnode02-pre  role=dnode
+
+#10.4.17.228   fqdn=10.4.17.228 role=master
+#10.4.25.86    fqdn=10.4.25.86  role=dnode
+#10.4.23.251   fqdn=10.4.23.251  role=dnode

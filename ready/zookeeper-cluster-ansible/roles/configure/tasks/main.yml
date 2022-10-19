@@ -1,0 +1,18 @@
+---
+
+- name: Adding Zookeeper ID File | {{ zookeeperDataDir }}/myid
+  ansible.builtin.template:
+    dest: "{{ zookeeperDataDir }}/myid"
+    src: myid
+
+- name: Creating zookeeper configurations
+  ansible.builtin.include_role:
+      name: configure
+      tasks_from: dynamicConfigs.yml
+  vars:
+    - zookeeperConfigFile: "{{ item }}"
+  loop:
+    - zoo.cfg
+    - log4j.properties
+    - java.env
+    - jaas.conf

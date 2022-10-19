@@ -1,0 +1,41 @@
+---
+
+- hosts: clusterNodes:clusterAddNodes:kafka-mirror-maker
+  gather_facts: true
+  become: true
+  tasks:
+    - name: install common utils
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: commonUtils.yml
+
+    - name: copy python requirements.txt
+      ansible.builtin.copy:
+        src: "roles/jmxMonitor/files/requirements.txt"
+        dest: "/tmp/requirements.txt"
+
+    - name: installing requirements.txt with pip3
+      ansible.builtin.pip:
+        requirements: "/tmp/requirements.txt"
+        executable: pip3
+
+- hosts: clusterNodes:clusterAddNodes
+  gather_facts: true
+  roles:
+    - jmxMonitor
+
+- hosts: kafka-mirror-maker
+  gather_facts: true
+  tasks:
+    - ansible.builtin.include_role:
+        name: jmxMonitor
+        tasks_from: kafka-mirror-maker.yml
+
+- hosts: clusterNodes:clusterAddNodes:kafka-mirror-maker
+  gather_facts: true
+  become: true
+  tasks:
+    - name: clean temp files
+      ansible.builtin.file:
+        path: "/tmp/requirements.txt"
+        state: absent

@@ -1,0 +1,25 @@
+---
+
+- hosts: clusterNodes[2]
+  gather_facts: true
+  become: true
+  tasks:
+    - name: copy kafka-python package
+      ansible.builtin.copy:
+        src: "roles/jmxMonitor/files/requirements.txt"
+        dest: "/tmp/requirements.txt"
+
+    - name: installing kafka_python with pip3
+      ansible.builtin.pip:
+        requirements: "/tmp/requirements.txt"
+        executable: pip3
+
+    - include_role:
+        name: jmxMonitor
+        tasks_from: kafka-consumer-group-metric.yml
+
+  post_tasks:
+    - name: clean temp files
+      ansible.builtin.file:
+        path: "/tmp/requirements.txt"
+        state: absent

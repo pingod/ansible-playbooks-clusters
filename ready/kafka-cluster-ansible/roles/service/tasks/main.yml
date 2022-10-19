@@ -1,0 +1,13 @@
+---
+
+- name: Creating Kafka Service File | RedHat
+  ansible.builtin.template:
+    src: service.j2
+    dest: /usr/lib/systemd/system/kafka.service
+  when: ansible_os_family == 'RedHat'
+
+- name: Creating Kafka Service File | Debain
+  ansible.builtin.template:
+    src: service.j2
+    dest: /lib/systemd/system/kafka.service
+  when: ansible_os_family == 'Debian'

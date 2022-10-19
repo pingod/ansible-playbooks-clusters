@@ -1,0 +1,21 @@
+---
+
+- hosts: clusterNodes
+  gather_facts: true
+  serial: 1
+  tasks:
+    - name: including restart tasks
+      ansible.builtin.import_role:
+        name: serviceState
+      vars:
+        serviceName: zookeeper
+        serviceState: restarted
+
+    - name: zookeeper port status
+      ansible.builtin.include_role:
+        name: portCheck
+      vars:
+        PortNumber: "{{ item }}"
+        PortStatus: started
+      loop:
+        - "{{ zookeeperClientPort }}"

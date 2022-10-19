@@ -1,0 +1,22 @@
+---
+
+- name: checking java installation
+  ansible.builtin.raw: which java
+  register: javaRequired
+  ignore_errors: true
+  changed_when: false
+
+- ansible.builtin.include_tasks: install.yml
+  when: javaRequired is failed or updateJava
+
+# Not Required
+# As System Admin Team might upgrade Java as part of their Patch Cycle
+# old version of java might cause issue.
+
+#- name: Checking if Java_home setting is needed
+#   ansible.builtin.command:  /bin/bash -l -c "echo $JAVA_HOME"
+#   register: checkJavaHome
+#   changed_when: false
+
+# - ansible.builtin.include_tasks: javaHome.yml
+#   when: checkJavaHome.stdout == ''

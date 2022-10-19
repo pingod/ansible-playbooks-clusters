@@ -1,0 +1,10 @@
+---
+
+- name: copy & unarchieve kafka
+  ansible.builtin.include_tasks: download.yml
+
+- name: Create kafka dir symlink
+  ansible.builtin.include_tasks: createSymlink.yml
+
+- name: Setting kafka version into profile.d
+  ansible.builtin.include_tasks: envSet.yml

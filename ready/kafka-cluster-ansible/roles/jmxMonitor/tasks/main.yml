@@ -1,0 +1,27 @@
+---
+
+- name: creating folder for jmx monitor
+  ansible.builtin.file:
+    path: "{{ kafkaInstallDir }}/jmxMonitor"
+    state: directory
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+
+- name: copying script and input files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ kafkaInstallDir }}/jmxMonitor/{{ item }}"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+  loop:
+    - kafka-jmx-metric-collector.py
+    - kafka-input.txt
+
+- name: kafka metric collector cron
+  ansible.builtin.cron:
+    name: "kafka metric collector cron task"
+    minute: "*"
+    hour: "*"
+    weekday: "*"
+    user: "{{ kafkaUser }}"
+    job: 'python3 {{ kafkaInstallDir }}/jmxMonitor/kafka-jmx-metric-collector.py {{ ansible_fqdn }} {{ kafkaJmxPort }} {{ kafkaInstallDir }}/jmxMonitor/kafka-input.txt {{ kafkaLogDir }}/ {{ kafkaClusterName }} \;'

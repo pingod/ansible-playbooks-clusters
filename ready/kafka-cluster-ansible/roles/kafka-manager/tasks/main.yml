@@ -1,0 +1,66 @@
+---
+
+- name: copy and unarchive kafka manager | {{ kafkaManagerVersion }} | Remote Download
+  ansible.builtin.unarchive:
+    src: "{{ kafkaManagerDownloadLink }}"
+    dest: "{{ kafkaManagerInstallDir }}"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+    validate_certs: false
+    keep_newer: yes
+    remote_src: true
+    creates: "{{ kafkaManagerInstallDir }}/cmak-{{ kafkaManagerVersion }}/bin"
+  when: kafkaManagerRemoteDownload
+
+- name: copy and unarchive kafka | {{ kafkaManagerVersion }} | Local Upload
+  ansible.builtin.unarchive:
+    src: "{{ kafkaManagerLocalLink }}"
+    dest: "{{ kafkaManagerInstallDir }}"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+    validate_certs: false
+    keep_newer: yes
+    creates: "{{ kafkaManagerInstallDir }}/cmak-{{ kafkaManagerVersion }}/bin"
+  when: not kafkaManagerRemoteDownload
+
+- name: Ensuring permissions on unarchieved files
+  ansible.builtin.file:
+    path: "{{ kafkaManagerInstallDir }}/cmak-{{ kafkaManagerVersion }}"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+    recurse: true
+    mode: 0775
+
+- name: Creating symlink to latest version | {{ kafkaManagerVersion }}
+  ansible.builtin.file:
+    src: "{{ kafkaManagerInstallDir }}/cmak-{{ kafkaManagerVersion }}"
+    dest: "{{ kafkaManagerInstallDir }}/kafka-manager"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+    state: link
+
+- name: creating application.conf for kafka-manager
+  ansible.builtin.template:
+    src: application.conf.j2
+    dest: "{{ kafkaManagerInstallDir }}/cmak-{{ kafkaManagerVersion }}/conf/application.conf"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+
+- name: creating systemd unit file for kafka-manager | RedHat
+  ansible.builtin.template:
+    src: kafka-manager.service.j2
+    dest: /usr/lib/systemd/system/kafka-manager.service
+  when: ansible_os_family == 'RedHat'
+
+- name: creating systemd unit file for kafka-manager | Debian
+  ansible.builtin.template:
+    src: kafka-manager.service.j2
+    dest: /lib/systemd/system/kafka-manager.service
+  when: ansible_os_family == 'Debian'
+
+- name: start kafka-manager service
+  ansible.builtin.import_role:
+    name: serviceState
+  vars:
+    serviceName: kafka-manager
+    serviceState: started

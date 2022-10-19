@@ -1,0 +1,17 @@
+---
+
+- name: Creating installing dir | {{ kafkaInstallDir }}
+  ansible.builtin.file:
+    path: "{{ kafkaInstallDir }}"
+    state: directory
+
+- name: Creating kafka directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+    mode: 0775
+  loop:
+    - "{{ kafkaDataDir }}"
+    - "{{ kafkaLogDir }}"

@@ -1,0 +1,62 @@
+---
+
+# TODO: download kafka tar file to ansible server only if possible
+#       to reduce multiple downloads on all nodes.
+#       Not Required: if downloading from local company mirror.
+
+#  判断本地压缩包是否存在
+- name: Install  | Check if local Kafka package tar file exist .
+  delegate_to: localhost
+  stat: path={{ kafkaInstallDir }}/kafka_{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz
+  register: Kafka_local_package_tar_result
+
+
+#  判断远端压缩包是否存在
+- name: Install  | Check if remote Kafka package tar file exist .
+  stat: path={{ kafkaInstallDir }}/kafka_{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz
+  register: Kafka_remote_package_tar_result
+
+
+##  如果本地和远程都没有压缩包则本地下载然后拷贝到远程
+#- name: Install  | Download Kafka Bin file to Ansible Controller
+  #delegate_to: localhost
+  #get_url:
+    #url: "https://downloads.apache.org/kafka/{{ kafkaVersion }}/Kafka_{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz"
+    #dest: "/tmp/"
+    ##owner: "{{ ansible_user }}"
+  #tags: download,local
+  #when: not Kafka_local_package_tar_result.stat.exists and not Kafka_remote_package_tar_result.stat.exists
+
+##  如果本地和远程都没有压缩包，则本地下载然后拷贝到远程
+#- name: Install  | Copy Package To Remote Server
+  #copy: src={{ kafkaInstallDir }}/Kafka_-{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz dest={{ kafkaInstallDir }} owner={{ user }} mode=755
+  #when: not Kafka_remote_package_tar_result.stat.exists and not Kafka_remote_package_tar_result.stat.exists
+
+#  如果本地和远程都没有压缩包，则远程主机自行下载压缩包
+- name: Install  | Download Kafka Bin file at remote host
+  get_url:
+    url: "https://downloads.apache.org/kafka/{{ kafkaVersion }}/kafka_{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz"
+    dest: "{{ kafkaTarLocation }}"
+    #owner: "{{ ansible_user }}"
+  when: not Kafka_local_package_tar_result.stat.exists and not Kafka_remote_package_tar_result.stat.exists
+
+
+
+- name: copy and unarchive kafka | {{ kafkaVersion }}
+  ansible.builtin.unarchive:
+    src: "{{ kafkaTarLocation }}kafka_{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz"
+    dest: "{{ kafkaInstallDir }}"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+    validate_certs: false
+    keep_newer: yes
+    remote_src: yes
+    creates: "{{ kafkaInstallDir }}/kafka_{{ kafkaVersion }}-{{ kafkaVersion }}/bin"
+
+- name: Ensuring permissions on unarchieved files
+  ansible.builtin.file:
+    path: "{{ kafkaInstallDir }}/kafka_{{ kafkaVersion }}-{{ kafkaVersion }}"
+    owner: "{{ kafkaUser }}"
+    group: "{{ kafkaGroup }}"
+    recurse: true
+    mode: 0775

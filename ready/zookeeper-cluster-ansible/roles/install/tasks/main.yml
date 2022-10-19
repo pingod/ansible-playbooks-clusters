@@ -1,0 +1,10 @@
+---
+
+- name: copy zookeeper tar
+  ansible.builtin.include_tasks: download.yml
+
+- name: Create zookeeper dir symlink
+  ansible.builtin.include_tasks: createSymlink.yml
+
+- name: Setting zookeeper version into profile.d
+  ansible.builtin.include_tasks: envSet.yml

@@ -1,0 +1,22 @@
+---
+
+- name: system upgrade | RedHat
+  ansible.builtin.yum:
+    name: "*"
+    state: latest
+    update_cache: true
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- block:
+
+    - name: system upgrade | Debian
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: true
+
+    - name: removing unused packages | Debian
+      ansible.builtin.apt:
+        autoclean: true
+        autoremove: true
+
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

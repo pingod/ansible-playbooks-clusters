@@ -1,0 +1,81 @@
+---
+
+javaVersion: 11
+updateJava: false                                               # only when you need to update java version
+
+useSystemFirewall: false
+
+kafkaGroup: kafka
+kafkaUser: kafka
+kafkaGroupId: 7000
+kafkaUserId: 7000
+
+kafkaInstallDir: /kafka
+kafkaDataDir: "{{ kafkaInstallDir }}/kafka-data"
+kafkaLogDir: "{{ kafkaInstallDir }}/kafka-logs"
+
+kafkaGcLogs: true
+kafkaGcLogsLocation: "{{ kafkaLogDir }}"
+kafkaGcLogFileCount: 5
+kafkaGcLogFileSize: 10M # with optional K, M or G suffix
+
+# JVM Settings
+# total memory * 0.25 or 25% of total memory only
+# Rest 75% will be used for Caching 
+kafkaXms: "2048m"             # 6GB is max recommended for production kafka
+kafkaXmx: "{{ kafkaXms }}"
+kafkaPort: 9092
+kafkaJmxPort: 9998
+kafkaVmMaxMapCount: 100000
+
+# zookeeper string should comma separate value
+# 192.168.56.100:2181,192.168.56.101:2181,192.168.56.102:2181
+kafkaZookeeperAddressString: 10.2.122.163:2181,10.2.119.55:2181,10.2.142.107:2181
+kafkaZookeeperConnectionTimeoutMs: 10000
+
+# please use name like <environment>-kafka, so it get distinct name in NewRelic
+kafkaClusterName: kafka-cluster
+
+kafkaVersion: 3.3.1
+kafkaScalaVersion: 2.13
+kafkaTarLocation: "/tmp/"
+
+# below will be used while decommission/downgrade only
+kafkaOldVersion: 3.0.0
+kafkaOldScalaVersion: 2.13
+
+### Production Optimized Parameters
+### if nothing is set then it will use default values.
+kafkaDefaultReplicationFactor: 3
+kafkaMinInsyncReplicas: "{{ kafkaDefaultReplicationFactor | int - 1 }}"
+kafkaBackgroundThread: 10
+kafkaMessagesMaxBytes: 1000012                                    # 1MB approx
+kafkaReplicaFetchMaxBytes: 2000000                                # this should be higher than kafkaMessagesMaxBytes
+kafkaQuededMaxRequests: 500
+kafkaNumReplicaFetchers: 1
+kafkaNumNetworkThreads: 6
+kafkaNumIoThreads: 8
+kafkaSocketSendBufferBytes: 102400
+kafkaSocetReceiveBufferBytes: 102400
+kafkaSocetRequestMaxBytes: 104857600
+kafkaNumPartitions: 1
+kafkaNumRecoveryThreadsPerDataDir: 1
+kafkaOffsetsTopicReplicationFactor: 3
+kafkaTransactionStateLogReplicationFactor: "{{ kafkaOffsetsTopicReplicationFactor}}"
+kafkaTransactionStateLogMinIsr: "{{  kafkaOffsetsTopicReplicationFactor }}"
+kafkaLogFlushIntervalMessages: 10000
+kafkaLogFlushIntervalMs: 1000
+kafkaLogRetentionHours: 168
+kafkaLogSegmentBytes: 2073741824                                # need to ask kafka expert, should we use default 1GB here or 2GB or more
+kafkalogRetentionCheckIntervalMs: 300000
+kafkaGroupInitRebalanceDelayMs: 3
+
+
+# Only for AWS Based Cluster
+aws_kafka_ec2_region: "us-east-1"
+aws_kafka_ebs_device: "/dev/nvme1n1"
+aws_kafka_ebs_device_fs: "xfs"                                  # currently tested with xfs only.
+aws_kafka_ebs_device_mount_location: "{{ kafkaInstallDir }}"
+
+# Only AWS Cloudwatch Agent
+aws_kafka_cloudwatch_log_group: "kafka-{{ kafkaClusterName }}-logs"

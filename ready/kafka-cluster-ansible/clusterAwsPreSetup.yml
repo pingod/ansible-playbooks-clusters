@@ -1,0 +1,24 @@
+---
+
+- hosts: clusterNodes:clusterAddNodes
+  gather_facts: true
+  become: true
+  tasks:
+    - name: mount ebs volume
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: ebsDisk.yml
+
+    - name: install & configure cloudwatch logs agent
+      ansible.builtin.include_role:
+        name: cloudwatch
+
+    - name: install common utils
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: commonUtils.yml
+
+    - name: install amazon linux extra package
+      ansible.builtin.package:
+        name: "amazon-linux-extras"
+        state: latest
