@@ -7,7 +7,7 @@ tdengine_port: 6030
 #tdengine_data_dirs: "/data/tdengine/datal, /data/tdengine/data2"
 #cmd: ''
 tmp_dir: "/tmp/{{ tdengine_version }}"
-tdengine_version: "TDengine-server-3.0.1.1"
+tdengine_version: "TDengine-server-3.0.1.5"
 tdengine_install_path: "/opt/middleware/TDengine-server"
 tdengine_config:
   ip: "{{ ansible_host } }"
@@ -15,6 +15,8 @@ tdengine_config:
 #主节点的fqdn
 #sit
 #master_fqdn: 10.3.117.162
+#master_fqdn: tdengine-master01-dev
+#master_fqdn: tdengine-master01-sit
 master_fqdn: tdengine-master01-pre
 
 #如果为true,则将本地的安装压缩包上传到服务器

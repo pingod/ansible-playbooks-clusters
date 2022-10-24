@@ -16,14 +16,15 @@ hadoop_tmp: "{{ hadoop_path }}/tmp"
 hadoop_config_path: "{{ hadoop_path }}/current/etc/hadoop"
 hadoop_dfs_name: "{{ hadoop_path }}/dfs/name"
 hadoop_dfs_data: "{{ hadoop_path }}/dfs/data"
+hadoop_dfs_checkpoint: "{{ hadoop_path }}/dfs/checkpoint"
 hadoop_log_path: "{{ hadoop_path }}/hadoop-{{ hadoop_version }}/logs"
 hadoop_journalnode_path: "{{ hadoop_path }}/journalnode"
-
 
 hadoop_create_path:
   - "{{ hadoop_tmp }}"
   - "{{ hadoop_dfs_name }}"
   - "{{ hadoop_dfs_data }}"
+  - "{{ hadoop_dfs_checkpoint }}"
   - "{{ hadoop_log_path }}"
   - "{{ hadoop_journalnode_path }}"
 
@@ -56,13 +57,11 @@ core_site_properties:
     "value":"10.4.16.238:2181,10.4.26.85:2181,10.4.20.55:2181"
   }
 
-
-
 dfs_namenode_httpport: 9001
 hdfs_site_properties:
   - {
-      "name":"dfs.namenode.secondary.http-address",
-      "value":"{{ master_ip }}:{{ dfs_namenode_httpport }}"
+      "name":"dfs.replication",
+      "value":"{{ groups['workers']|length }}"
   }
   - {
       "name":"dfs.namenode.name.dir",
@@ -73,8 +72,68 @@ hdfs_site_properties:
       "value":"file:{{ hadoop_dfs_data }}"
   }
   - {
-      "name":"dfs.replication",
-      "value":"{{ groups['workers']|length }}"
+      "name":"dfs.blocksize",
+      "value":"67108864"
+  }
+  - {
+      "name":"dfs.datanode.data.dir",
+      "value":"file:{{ hadoop_dfs_data }}"
+  }
+  - {
+      "name":"dfs.namenode.checkpoint.dir",
+      "value":"file:{{ hadoop_dfs_checkpoint }}"
+  }
+  - {
+      "name":"dfs.namenode.handler.count",
+      "value":"10"
+  }
+  - {
+      "name":"dfs.datanode.handler.count",
+      "value":"10"
+  }
+  - {
+      "name":"dfs.nameservices",
+      "value":"hdfscluster"
+  }
+  - {
+      "name":"dfs.ha.namenodes.hdfscluster",
+      "value":"nn1,nn2"
+  }
+  - {
+      "name":"dfs.namenode.rpc-address.hdfscluster.nn1",
+      "value":"hdfs01:9000"
+  }
+  - {
+      "name":"dfs.namenode.rpc-address.hdfscluster.nn2",
+      "value":"hdfs02:9000"
+  }
+  - {
+      "name":"dfs.namenode.http-address.hdfscluster.nn1",
+      "value":"hdfs01:50070"
+  }
+  - {
+      "name":"dfs.namenode.http-address.hdfscluster.nn2",
+      "value":"hdfs02:50070"
+  }
+  - {
+      "name":"dfs.namenode.shared.edits.dir",
+      "value":"qjournal://hdfs01:8485;hdfs02:8485;hdfs03:8485/hdfscluster"
+  }
+  - {
+      "name":"dfs.client.failover.proxy.provider",
+      "value":"org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
+  }
+  - {
+      "name":"dfs.ha.automatic-failover.enabled",
+      "value":"true"
+  }
+  - {
+      "name":"dfs.ha.fencing.methods",
+      "value":"shell(/bin/true)"
+  }
+  - {
+      "name":"dfs.namenode.secondary.http-address",
+      "value":"{{ master_ip }}:{{ dfs_namenode_httpport }}"
   }
   - {
     "name":"dfs.webhdfs.enabled",

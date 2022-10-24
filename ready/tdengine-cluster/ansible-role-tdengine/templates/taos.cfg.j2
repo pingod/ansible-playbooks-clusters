@@ -32,6 +32,9 @@ tempDir                   {{ tdengine_install_path }}/tmp
 
 keepColumnName            1
 
+wal_level 2
+wal_fsync_period 3000
+
 logKeepDays           30
 
 monitor                  1
