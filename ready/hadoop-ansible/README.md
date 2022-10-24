@@ -1,5 +1,4 @@
-This project is copied from [here](https://github.com/ZidaneCA/hadoop-ansible) with following major upgrades
-This project is copied from [here](https://github.com/pippozq/hadoop-ansible) with following major upgrades
+This project is copied from [here](https://github.com/ZidaneCA/hadoop-ansible) with following major upgrades (20221021)
 - Download files to remote server directly
 - Install spark via ansible
 - Fixes to some identified issues in installation process
@@ -14,116 +13,14 @@ This project is copied from [here](https://github.com/pippozq/hadoop-ansible) wi
 - Spark is the version 3.0.3
 
 ## Before Install
-Use DNS Server or update /etc/hosts for all servers
+1. Use DNS Server or update /etc/hosts for all servers
+2. Zookeeper has installed
 
 ## Install Hadoop
 1. Get URL and version of desired hadoop version
 2. Update the `{{ download_path }}` and `{{ hadoop_url }}` in `vars/var_basic.yml` to desired path on remote server and url of hadoop tar.gz
-
-```
-hadoop_url: "https://dlcdn.apache.org/hadoop/common/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz"
-download_path: "/home/user/Downloads"
-hadoop_version: "3.3.2"
-hadoop_path: "/home/hadoop"
-hadoop_config_path: "/home/hadoop/current/etc/hadoop"
-hadoop_tmp: "/home/hadoop/tmp"
-hadoop_dfs_name: "/home/hadoop/dfs/name"
-hadoop_dfs_data: "/home/hadoop/dfs/data"
-hadoop_log_path: "/home/hadoop/hadoop-{{ hadoop_version }}/logs"
-
-```
-3. Use ansible template to generate the hadoop configration, so If your want to add more properties, just update the vars/var_basic.yml.default is
-
-```
-# hadoop configration 
-hdfs_port: 9000
-core_site_properties:
-  - {
-      "name":"fs.defaultFS",
-      "value":"hdfs://{{ master_ip }}:{{ hdfs_port }}"
-  }
-  - {
-      "name":"hadoop.tmp.dir",
-      "value":"file:{{ hadoop_tmp }}"
-  }
-  - {
-    "name":"io.file.buffer.size",
-    "value":"131072"
-  }
-
-dfs_namenode_httpport: 9001
-hdfs_site_properties:
-  - {
-      "name":"dfs.namenode.secondary.http-address",
-      "value":"{{ master_ip }}:{{ dfs_namenode_httpport }}"
-  }
-  - {
-      "name":"dfs.namenode.name.dir",
-      "value":"file:{{ hadoop_dfs_name }}"
-  }
-  - {
-      "name":"dfs.namenode.data.dir",
-      "value":"file:{{ hadoop_dfs_data }}"
-  }
-  - {
-      "name":"dfs.replication",
-      "value":"{{ groups['workers']|length }}"
-  }
-  - {
-    "name":"dfs.webhdfs.enabled",
-    "value":"true"
-  }
-
-mapred_site_properties:
- - {
-   "name": "mapreduce.framework.name",
-   "value": "yarn"
- }
- - {
-   "name": "mapreduce.admin.user.env",
-   "value": "HADOOP_MAPRED_HOME=$HADOOP_COMMON_HOME"
- }
- - {
-   "name":"yarn.app.mapreduce.am.env",
-   "value":"HADOOP_MAPRED_HOME=$HADOOP_COMMON_HOME"
- }
-
-yarn_resourcemanager_port: 8040
-yarn_resourcemanager_scheduler_port: 8030
-yarn_resourcemanager_webapp_port: 8088
-yarn_resourcemanager_tracker_port: 8025
-yarn_resourcemanager_admin_port: 8141
-
-yarn_site_properties:
-  - {
-    "name":"yarn.resourcemanager.address",
-    "value":"{{ master_ip }}:{{ yarn_resourcemanager_port }}"
-  }
-  - {
-    "name":"yarn.resourcemanager.scheduler.address",
-    "value":"{{ master_ip }}:{{ yarn_resourcemanager_scheduler_port }}"
-  }
-  - {
-    "name":"yarn.resourcemanager.webapp.address",
-    "value":"{{ master_ip }}:{{ yarn_resourcemanager_webapp_port }}"
-  }
-  - {
-    "name": "yarn.resourcemanager.resource-tracker.address",
-    "value": "{{ master_ip }}:{{ yarn_resourcemanager_tracker_port }}"
-  }
-  - {
-    "name": "yarn.resourcemanager.admin.address",
-    "value": "{{ master_ip }}:{{ yarn_resourcemanager_admin_port }}"
-  }
-  - {
-    "name": "yarn.nodemanager.aux-services",
-    "value": "mapreduce_shuffle"
-  } 
-  - {
-    "name": "yarn.nodemanager.aux-services.mapreduce.shuffle.class",
-    "value": "org.apache.hadoop.mapred.ShuffleHandler"
-  }
-```
+3. Use ansible template to generate the hadoop configration, so If your want to add more properties, just update the `vars/var_basic.yml` 
+4. Update `ha.zookeeper.quorum` in `vars/var_basic.yml`
 
 
 ---

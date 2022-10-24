@@ -12,17 +12,20 @@ hadoop_url: "https://dlcdn.apache.org/hadoop/common/hadoop-{{ hadoop_version }}/
 download_path: "/tmp/Downloads"
 hadoop_version: "3.3.2"
 hadoop_path: "/home/hadoop"
-hadoop_config_path: "/home/hadoop/current/etc/hadoop"
-hadoop_tmp: "/home/hadoop/tmp"
-hadoop_dfs_name: "/home/hadoop/dfs/name"
-hadoop_dfs_data: "/home/hadoop/dfs/data"
-hadoop_log_path: "/home/hadoop/hadoop-{{ hadoop_version }}/logs"
+hadoop_tmp: "{{ hadoop_path }}/tmp"
+hadoop_config_path: "{{ hadoop_path }}/current/etc/hadoop"
+hadoop_dfs_name: "{{ hadoop_path }}/dfs/name"
+hadoop_dfs_data: "{{ hadoop_path }}/dfs/data"
+hadoop_log_path: "{{ hadoop_path }}/hadoop-{{ hadoop_version }}/logs"
+hadoop_journalnode_path: "{{ hadoop_path }}/journalnode"
+
 
 hadoop_create_path:
   - "{{ hadoop_tmp }}"
   - "{{ hadoop_dfs_name }}"
   - "{{ hadoop_dfs_data }}"
   - "{{ hadoop_log_path }}"
+  - "{{ hadoop_journalnode_path }}"
 
 
 # hadoop configration 
@@ -33,13 +36,27 @@ core_site_properties:
       "value":"hdfs://{{ master_ip }}:{{ hdfs_port }}"
   }
   - {
+      "name":"dfs.journalnode.edits.dir",
+      "value":"file:{{ hadoop_journalnode_path }}"
+  }
+  - {
       "name":"hadoop.tmp.dir",
       "value":"file:{{ hadoop_tmp }}"
   }
   - {
-    "name":"io.file.buffer.size",
-    "value":"131072"
+      "name":"fs.trash.interval",
+      "value":"1440"
   }
+  - {
+    "name":"io.file.buffer.size",
+    "value":"65536"
+  }
+  - {
+    "name":"ha.zookeeper.quorum",
+    "value":"10.4.16.238:2181,10.4.26.85:2181,10.4.20.55:2181"
+  }
+
+
 
 dfs_namenode_httpport: 9001
 hdfs_site_properties:
