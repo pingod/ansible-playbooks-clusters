@@ -1,6 +1,6 @@
 ---
 #nacos_version: 2.0.3
-nacos_version: 2.1.1
+nacos_version: 2.1.2
 
 #nacos进程运行用户
 user: "nacos"
@@ -9,7 +9,7 @@ group: "nacos"
 
 #填入给nacos用的用户及数据库名称
 mysql:
-  address: 10.4.21.220
+  address: 10.2.102.133
   port: 3306
   user: nacos
   password: thundersoftnacos
@@ -18,8 +18,8 @@ mysql:
 
 #填入mysql数据的root用户，供导入sql使用(仅在部署过程中使用)
 mysql_admin:
-  user: admin
-  password: thundersoftprerooter
+  user: root
+  password: e0LmwJmTOc4lYXAE
 
 # nacos port
 nacos_port: '8848'
