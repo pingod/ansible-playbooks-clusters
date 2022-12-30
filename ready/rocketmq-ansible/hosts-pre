@@ -1,0 +1,25 @@
+#Apache Rocketmq namesrv
+[rocketmq_namesrv]
+10.4.21.7
+10.4.26.158
+10.4.23.62
+
+
+#Apache Rocketmq broker 
+[rocketmq_broker]
+10.4.21.7 brokerName=broker-a brokerId=0 brokerRole=SYNC_MASTER
+10.4.26.158  brokerName=broker-b brokerId=1 brokerRole=SLAVE
+10.2.142.107 brokerName=broker-c brokerId=2 brokerRole=SLAVE
+
+[rocketmq_broker:vars]
+brokerClusterName=MqClusterPre
+namesrvAddr=10.4.21.7:9876;10.4.26.158:9876;10.2.142.107:9876
+storePathRootDir=/opt/rocketmq/store
+
+#Apache Rocketmq exporter
+[rocketmq_exporter]
+10.2.142.107
+[rocketmq_exporter:vars]
+namesrvAddr=10.4.21.7:9876;10.4.26.158:9876;10.2.142.107:9876
+webTelemetryPath=/metrics
+rocketmqVersion=V4_9_4

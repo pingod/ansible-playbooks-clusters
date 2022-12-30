@@ -1,0 +1,18 @@
+[Unit]
+Description=rocketmq namesrv service
+After=network.target
+
+[Service]
+Type=simple
+
+ExecStart=/bin/bash -c 'source /etc/profile && {{ rocketmq_deploy_path }}/rocketmq/bin/mqbroker -c {{ rocketmq_deploy_path }}/rocketmq/conf/broker.conf'
+ExecStop=/bin/bash -c 'source /etc/profile && {{ rocketmq_deploy_path }}/rocketmq/bin/mqshutdown broker'
+RemainAfterExit=yes
+
+LimitNOFILE=655350
+LimitMEMLOCK=infinity
+
+Restart=always
+RestartSec=5s
+[Install]
+WantedBy=multi-user.target

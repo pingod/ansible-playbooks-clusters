@@ -1,0 +1,43 @@
+# deploy Apache Rocketmq cluster
+- name: Apache Rocketmq
+  hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: True
+  vars_files:
+    - vars/main.yml
+
+  pre_tasks:
+    - name: create rocketmq deploy path
+      file:
+        path: "{{ rocketmq_deploy_path }}"
+        state: directory
+        recurse: yes
+    - name: Install JDK [apt]
+      apt: name=openjdk-8-jdk  state=present
+      when: ansible_os_family == 'Debian'
+    - name: Install unzip [apt]
+      apt: name=unzip  state=present
+      when: ansible_os_family == 'Debian'
+
+# deploy Apache Rocketmq namesrv
+- hosts: rocketmq_namesrv
+  vars_files:
+    - vars/main.yml
+  roles:
+    - namesrv
+
+# deploy Apache Rocketmq broker
+- hosts: rocketmq_broker
+  vars_files:
+    - vars/main.yml
+  roles:
+    - broker
+
+# deploy Apache Rocketmq exporter
+# - hosts: rocketmq_exporter
+#   vars_files:
+#     - vars/main.yml
+#   roles:
+#     - exporter
