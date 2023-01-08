@@ -14,9 +14,8 @@ tdengine_config:
 
 #主节点的fqdn
 #sit
-#master_fqdn: 10.3.117.162
-master_fqdn: tdengine-master01-dev
-#master_fqdn: tdengine-master01-sit
+#master_fqdn: tdengine-master01-dev
+master_fqdn: tdengine-master01-sit
 #master_fqdn: tdengine-master01-pre
 
 #如果为true,则将本地的安装压缩包上传到服务器
