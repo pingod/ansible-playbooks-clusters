@@ -1,15 +1,21 @@
 #Apache Rocketmq namesrv
 [rocketmq_namesrv]
-10.3.113.93
-10.3.143.174
-10.3.112.157
+10.3.113.93  controllerDLegerSelfId=n0
+10.3.143.174 controllerDLegerSelfId=n1
+10.3.112.157 controllerDLegerSelfId=n2
 
+[rocketmq_namesrv:vars]
+controllerDLegerGroupName=SITgroup1
+controllerDLegerPeers=n0-10.3.113.93:9877;n1-10.3.143.174:9878;n2-10.3.112.157:9879
 
-#Apache Rocketmq broker 
+#Apache Rocketmq broker
 [rocketmq_broker]
-10.3.113.93 brokerName=broker-a brokerId=0 brokerRole=SYNC_MASTER
-10.3.143.174  brokerName=broker-b brokerId=1 brokerRole=SLAVE
-10.3.112.157 brokerName=broker-c brokerId=2 brokerRole=SLAVE
+#controllerDLegerSelfId必须n0开始递增
+10.3.113.93   brokerName=broker-a brokerId=0 brokerRole=ASYNC_MASTER
+10.3.143.174  brokerName=broker-b brokerId=0 brokerRole=ASYNC_MASTER
+#slave的brokerName需要与master的名称相同
+10.3.112.157  brokerName=broker-a brokerId=1 brokerRole=SLAVE
+#10.3.112.157  brokerName=broker-c brokerId=0 brokerRole=ASYNC_MASTER
 
 [rocketmq_broker:vars]
 brokerClusterName=MqClusterSit
@@ -22,4 +28,3 @@ storePathRootDir=/opt/rocketmq/store
 [rocketmq_exporter:vars]
 namesrvAddr=10.3.113.93:9876;10.3.143.174:9876;10.3.112.157:9876
 webTelemetryPath=/metrics
-rocketmqVersion=V4_9_4

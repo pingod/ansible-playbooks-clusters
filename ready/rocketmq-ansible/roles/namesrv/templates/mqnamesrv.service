@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-
-ExecStart=/bin/bash -c 'source /etc/profile && {{ rocketmq_deploy_path }}/rocketmq/bin/mqnamesrv'
+Environment=JAVA_HOME={{ java_home_path }}
+ExecStart={{ rocketmq_deploy_path }}/rocketmq/bin/mqnamesrv -c {{ rocketmq_deploy_path }}/rocketmq/conf/namesrv.conf
 ExecStop=/bin/bash -c 'source /etc/profile && {{ rocketmq_deploy_path }}/rocketmq/bin/mqshutdown namesrv'
 RemainAfterExit=yes
 

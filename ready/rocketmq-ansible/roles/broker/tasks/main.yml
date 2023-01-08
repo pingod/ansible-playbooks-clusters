@@ -27,6 +27,9 @@
     src: broker.conf.j2
     dest: "{{ rocketmq_deploy_path }}/rocketmq/conf/broker.conf"
 
+- name: change bin/runbroker.sh shell to bash
+  shell: "sed -i '1c #!/bin/bash' {{ rocketmq_deploy_path }}/rocketmq/bin/mqbroker"
+
 - name: add broker boot mechanism
   template:
     src: mqbroker.service
@@ -41,12 +44,12 @@
     msg: "{{ check_status }}"
 
 - name: optimize os
-  shell: sh {{ rocketmq_deploy_path }}/rocketmq/bin/os.sh
+  shell: bash {{ rocketmq_deploy_path }}/rocketmq/bin/os.sh
   when: deploy_directory.stat.exists == False
 
 - name: start broker
   shell: |
-    source /etc/profile
+    . /etc/profile
     systemctl disable mqbroker
     systemctl enable mqbroker
     systemctl stop mqbroker

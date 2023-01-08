@@ -42,6 +42,12 @@
     dest: /usr/lib/systemd/system/
     mode: 0750
 
+- name: add namesrv boot mechanism
+  template:
+    src: namesrv.conf.j2
+    dest: "{{ rocketmq_deploy_path }}/rocketmq/conf/namesrv.conf"
+    mode: 0750
+
 - name: check namesrv status
   shell: jps | grep NamesrvStartup | wc -l
   register: check_status

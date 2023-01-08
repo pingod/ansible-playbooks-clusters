@@ -15,7 +15,7 @@
         state: directory
         recurse: yes
     - name: Install JDK [apt]
-      apt: name=openjdk-8-jdk  state=present
+      apt: name=default-jdk  state=present
       when: ansible_os_family == 'Debian'
     - name: Install unzip [apt]
       apt: name=unzip  state=present

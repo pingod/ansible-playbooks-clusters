@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-
-ExecStart=/bin/bash -c 'source /etc/profile && {{ rocketmq_deploy_path }}/rocketmq/bin/mqbroker -c {{ rocketmq_deploy_path }}/rocketmq/conf/broker.conf'
+Environment=JAVA_HOME={{ java_home_path }}
+ExecStart={{ rocketmq_deploy_path }}/rocketmq/bin/mqbroker -n "{{ namesrvAddr }}" -c {{ rocketmq_deploy_path }}/rocketmq/conf/broker.conf --enable-proxy
 ExecStop=/bin/bash -c 'source /etc/profile && {{ rocketmq_deploy_path }}/rocketmq/bin/mqshutdown broker'
 RemainAfterExit=yes
 
@@ -14,5 +14,6 @@ LimitMEMLOCK=infinity
 
 Restart=always
 RestartSec=5s
+
 [Install]
 WantedBy=multi-user.target

@@ -1,8 +1,10 @@
 # The global variable
-rocketmq_version: "4.9.4"
+#rocketmq_version: "4.9.4"
+rocketmq_version: "5.0.0"
 rocketmq_download_url: "https://dlcdn.apache.org/rocketmq/{{ rocketmq_version }}/rocketmq-all-{{ rocketmq_version }}-bin-release.zip"
 rocketmq_deploy_path: /opt
 rocketmq_log_path: /opt/rocketmq/logs
+java_home_path: /usr/lib/jvm/default-java
 
 #exporter need build by yourself
 rocketmq_exporter_download_url: http://rocketmq.exporter/rocketmq-exporter-0.0.2-SNAPSHOT.jar
