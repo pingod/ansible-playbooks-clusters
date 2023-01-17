@@ -77,7 +77,7 @@ ansible-playbook -i hosts/host spark.yml
 1. A note [here](https://www.projectpro.io/hadoop-tutorial/big-data-hadoop-tutorial) says:
    If you encounter any “Incompatible NamespaceID’s” exception then to trouble shoot such error you have to do the following:
    - Stop all the services
-   - Delete /tmp/hadoop/dfs/data -> hadoop tmp
+   - Delete /home/hadoop/dfs/data/ -> hadoop tmp
    - Start all the services again.
 
 2. SLF4J: Class path contains multiple SLF4J bindings issue as found [here](https://issues.apache.org/jira/browse/HIVE-22915)  and potential fix is implemented in the hive_env.sh file

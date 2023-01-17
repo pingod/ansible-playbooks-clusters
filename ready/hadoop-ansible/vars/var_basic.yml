@@ -22,6 +22,7 @@ hadoop_journalnode_path: "{{ hadoop_path }}/journalnode"
 
 hadoop_create_path:
   - "{{ hadoop_tmp }}"
+  - "{{ hadoop_path }}"
   - "{{ hadoop_dfs_name }}"
   - "{{ hadoop_dfs_data }}"
   - "{{ hadoop_dfs_checkpoint }}"
@@ -37,10 +38,6 @@ core_site_properties:
       "value":"hdfs://{{ master_ip }}:{{ hdfs_port }}"
   }
   - {
-      "name":"dfs.journalnode.edits.dir",
-      "value":"file:{{ hadoop_journalnode_path }}"
-  }
-  - {
       "name":"hadoop.tmp.dir",
       "value":"file:{{ hadoop_tmp }}"
   }
@@ -54,7 +51,7 @@ core_site_properties:
   }
   - {
     "name":"ha.zookeeper.quorum",
-    "value":"10.4.16.238:2181,10.4.26.85:2181,10.4.20.55:2181"
+    "value":"10.3.18.74:2181,10.3.122.148:2181,10.3.135.220:2181"
   }
 
 dfs_namenode_httpport: 9001
@@ -139,6 +136,11 @@ hdfs_site_properties:
     "name":"dfs.webhdfs.enabled",
     "value":"true"
   }
+  - {
+      "name":"dfs.journalnode.edits.dir",
+      "value":"{{ hadoop_journalnode_path }}"
+  }
+
 
 mapred_site_properties:
  - {

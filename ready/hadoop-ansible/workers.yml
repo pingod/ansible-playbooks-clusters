@@ -1,7 +1,7 @@
 
 # Get Master Public Key
 - hosts: master 
-  remote_user: jon_doe
+  remote_user: "{{ user }}"
   become: true
   vars_files:
    - vars/user.yml
@@ -11,7 +11,7 @@
     - fetch_public_key
 
 - hosts: workers 
-  remote_user: jon_doe
+  remote_user: "{{ user }}"
   become: true
   vars_files:
    - vars/user.yml
