@@ -3,10 +3,11 @@
 10.4.21.7  controllerDLegerSelfId=n0
 10.4.26.158 controllerDLegerSelfId=n1
 10.4.23.62 controllerDLegerSelfId=n2
+10.4.24.221 controllerDLegerSelfId=n3
 
 [rocketmq_namesrv:vars]
 controllerDLegerGroupName=PREgroup1
-controllerDLegerPeers=n0-10.4.21.7:9877;n1-10.4.26.158:9878;n2-10.4.23.62:9879
+controllerDLegerPeers=n0-10.4.21.7:9877;n1-10.4.26.158:9878;n2-10.4.23.62:9879;n3-10.4.24.221:9879
 
 #Apache Rocketmq broker
 [rocketmq_broker]
@@ -16,15 +17,17 @@ controllerDLegerPeers=n0-10.4.21.7:9877;n1-10.4.26.158:9878;n2-10.4.23.62:9879
 #slave的brokerName需要与master的名称相同
 10.4.23.62  brokerName=broker-a brokerId=1 brokerRole=SLAVE
 #10.4.23.62  brokerName=broker-c brokerId=0 brokerRole=ASYNC_MASTER
+10.4.24.221 brokerName=broker-b brokerId=1 brokerRole=SLAVE
+
 
 [rocketmq_broker:vars]
 brokerClusterName=MqClusterPre
-namesrvAddr=10.4.21.7:9876;10.4.26.158:9876;10.4.23.62:9876
+namesrvAddr=10.4.21.7:9876;10.4.26.158:9876;10.4.23.62:9876;10.4.24.221:9876
 storePathRootDir=/opt/rocketmq/store
 
 #Apache Rocketmq exporter
 [rocketmq_exporter]
 10.4.23.62
 [rocketmq_exporter:vars]
-namesrvAddr=10.4.21.7:9876;10.4.26.158:9876;10.4.23.62:9876
+namesrvAddr=10.4.21.7:9876;10.4.26.158:9876;10.4.23.62:9876;10.4.24.221:9876
 webTelemetryPath=/metrics
